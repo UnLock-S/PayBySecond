@@ -1,5 +1,7 @@
 param([string]$FlutterRoot)
 . (Join-Path $PSScriptRoot '../common.ps1')
+& (Join-Path $ProjectRoot 'tools/build/update-config.ps1')
+& (Join-Path $ProjectRoot 'tools/check/docs.ps1')
 $flutter = Find-Flutter $FlutterRoot
 $sdkRoot = Split-Path -Parent (Split-Path -Parent $flutter)
 $dart = Join-Path $sdkRoot $(if ($IsWindows) { 'bin/dart.bat' } else { 'bin/dart' })

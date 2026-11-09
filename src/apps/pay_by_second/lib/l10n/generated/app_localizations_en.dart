@@ -312,10 +312,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a non-negative amount with up to two decimal places.';
 
   @override
-  String get dateError => 'Enter a valid date from 1970–2100 (YYYY-MM-DD).';
+  String get dateError => 'Enter a valid year-first date from 1970–2100.';
 
   @override
-  String get shiftError => 'Use HH:mm. Start and end must be different.';
+  String get shiftError =>
+      'Enter a valid time (e.g. 8 or 08:05). Start and end must differ.';
 
   @override
   String get saveError =>
@@ -333,17 +334,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clearBody =>
-      'Salary and schedule will be removed permanently. Language preference is kept.';
+      'Salary, schedule and overtime records will be removed permanently. Language preference is kept.';
 
   @override
   String get clear => 'Clear salary data';
 
   @override
-  String get clearError => 'Could not clear data. Existing data is retained.';
+  String get clearError =>
+      'Cleanup did not finish. Some data may already be removed; please retry.';
 
   @override
   String get privacyBody =>
-      'Salary is stored only on this device, without encryption. Browser cleanup may erase it. Keep your own records.';
+      'Salary is stored only on this device, without encryption. Browser cleanup may erase it; keep your own records. Optional update checks contact GitHub for version metadata only, without uploading salary.';
 
   @override
   String get limitations => 'Current scope';
@@ -357,7 +359,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageHelp =>
-      'Changes interface language only, not currency, time zone or salary rules.';
+      'Selecting a language returns home automatically; currency, time zone and salary rules are unchanged.';
 
   @override
   String get languageSaveError =>
@@ -373,4 +375,273 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get languageLoadError =>
       'Could not load language preference; using Chinese until you choose a language.';
+
+  @override
+  String get dateInputHelp => 'e.g. 20261109, 2026/11/9; year first';
+
+  @override
+  String get timeInputHelp => 'e.g. 8, 08, 805, 8:5 (24-hour clock)';
+
+  @override
+  String get wheelPicker => 'Scroll to select';
+
+  @override
+  String get pickerDone => 'Done';
+
+  @override
+  String get otTitle => 'Overtime';
+
+  @override
+  String get otDetails => 'Overtime details';
+
+  @override
+  String get otIdle => 'Leaving on time is a win, too';
+
+  @override
+  String get otRunning => 'Overtime in progress';
+
+  @override
+  String get otTotalTime => 'Total overtime';
+
+  @override
+  String get otThisTime => 'This session';
+
+  @override
+  String get otExpected => 'Expected overtime pay';
+
+  @override
+  String get otLegalReference => 'Statutory reference';
+
+  @override
+  String otJoke(String amount) {
+    return 'Time donated: about $amount. Boss happiness +1';
+  }
+
+  @override
+  String get otJokeHelp =>
+      'Unpaid time valued at 1× the reference hourly rate; not a payroll deduction.';
+
+  @override
+  String get otStart => 'Start overtime';
+
+  @override
+  String get otStop => 'Stop overtime';
+
+  @override
+  String get otIndependent => 'Tracked separately from regular income.';
+
+  @override
+  String get otSettings => 'Overtime rules';
+
+  @override
+  String get otSettingsHelp =>
+      'First save starts a session. After that, start or stop with one tap. Changes apply to new sessions only.';
+
+  @override
+  String get otPayMode => 'Overtime pay';
+
+  @override
+  String get otUnpaid => 'Unpaid';
+
+  @override
+  String get otStatutory => 'Statutory reference rate';
+
+  @override
+  String get otSingle => '1× hourly rate';
+
+  @override
+  String get otCustom => 'Custom multiplier';
+
+  @override
+  String get otDayType => 'Session day classification';
+
+  @override
+  String get otWeekday => 'Extended working day';
+
+  @override
+  String get otRest => 'Rest day';
+
+  @override
+  String get otHoliday => 'Statutory holiday';
+
+  @override
+  String get otCompLeave => 'Compensatory leave arranged';
+
+  @override
+  String get otCompHelp =>
+      'Rest-day statutory cash reference becomes zero; statutory holidays remain 3×.';
+
+  @override
+  String get otBase => 'Monthly overtime wage base';
+
+  @override
+  String get otMultiplier => 'Multiplier (0.01–100)';
+
+  @override
+  String get otMultiplierError =>
+      'Enter 0.01–100 with up to two decimal places.';
+
+  @override
+  String get otLegalHelp =>
+      'Mainland China, standard hours: hourly base = monthly base ÷ 21.75 ÷ 8. Weekday 1.5×; rest day without compensatory leave 2×; statutory holiday 3×. Select day type manually; split sessions when day type changes. No official holiday lookup. Not for comprehensive or irregular working hours. Estimates are not received wages.';
+
+  @override
+  String get otSaveDefaults => 'Save rules for new sessions';
+
+  @override
+  String get otSaveStart => 'Save & start overtime';
+
+  @override
+  String get otSaveError =>
+      'Not saved. Check for clock rollback, overlapping records or the 2,000-record limit, then retry.';
+
+  @override
+  String get otLoadError =>
+      'Overtime data could not be loaded. Existing data is retained; retry to continue.';
+
+  @override
+  String get otUnpaidValue => 'Total unpaid-time value';
+
+  @override
+  String get otHistory => 'Session history';
+
+  @override
+  String get otHistoryHelp =>
+      'Up to 2,000 sessions, never auto-deleted. Correct an end time if you forgot to stop (UTC+08:00, minute precision).';
+
+  @override
+  String get otEmpty => 'No overtime yet. Keep up the good habit.';
+
+  @override
+  String get otCorrectEnd => 'Correct end time';
+
+  @override
+  String get otDeleteTitle => 'Delete this session?';
+
+  @override
+  String get otDeleteBody =>
+      'This permanently removes the local record and updates totals.';
+
+  @override
+  String get otMore => 'Show more sessions';
+
+  @override
+  String get otEndDate => 'End date';
+
+  @override
+  String get otEndTime => 'End time';
+
+  @override
+  String get otEndError => 'End must be between session start and now.';
+
+  @override
+  String get otCorrectionHelp =>
+      'Enter the end in UTC+08:00. This recalculates the session; overlaps are not allowed.';
+
+  @override
+  String get otSaveCorrection => 'Save & recalculate session';
+
+  @override
+  String get softwareUpdate => 'Software update';
+
+  @override
+  String get updateMenuSummary => 'GitHub releases, notes and manual checks';
+
+  @override
+  String get updateLoading => 'Reading installed version…';
+
+  @override
+  String updateInstalled(String version) {
+    return 'Installed: $version';
+  }
+
+  @override
+  String updateReleaseVersion(String version) {
+    return 'Release: $version';
+  }
+
+  @override
+  String updateFound(String version) {
+    return 'Update available: $version';
+  }
+
+  @override
+  String get updateIdle => 'Updates have not been checked yet.';
+
+  @override
+  String get updateChecking => 'Checking GitHub releases…';
+
+  @override
+  String get updateAvailable => 'A newer stable release is available.';
+
+  @override
+  String get updateCurrent => 'No newer stable release was found.';
+
+  @override
+  String get updateNoRelease =>
+      'No publicly accessible stable release. The repository may be private or have no published release.';
+
+  @override
+  String get updateOffline =>
+      'This check did not complete. Check your connection and retry. Any displayed release may be cached.';
+
+  @override
+  String get updateRateLimited =>
+      'GitHub has limited requests. Please try again later.';
+
+  @override
+  String get updateInvalid =>
+      'Release metadata does not meet update rules; this check was rejected.';
+
+  @override
+  String get updatePreferenceError =>
+      'Could not read or save update preferences. Please retry.';
+
+  @override
+  String get updateWebHelp =>
+      'APK checks are for Android. The Web app is updated by deployment; you can still view GitHub releases.';
+
+  @override
+  String updateLastCheck(String time) {
+    return 'Last successful check: $time';
+  }
+
+  @override
+  String get updateCheckNow => 'Check now';
+
+  @override
+  String get updateFrequencyHelp =>
+      'Manual checks are at least 30 seconds apart. Only stable releases are checked, not prereleases.';
+
+  @override
+  String get updateAutomatic => 'Check automatically on startup';
+
+  @override
+  String get updateAutomaticHelp =>
+      'On by default, at most once per 24 hours. No background polling; turn off at any time.';
+
+  @override
+  String get updateNoNotes => 'No release notes were provided.';
+
+  @override
+  String get updateMissingApk =>
+      'This release has no matching APK for this architecture. Check the release page.';
+
+  @override
+  String get updateDownload => 'Download APK in browser';
+
+  @override
+  String get updateInstallHelp =>
+      'Download with the system browser, then install manually. APKs must retain the original signing certificate. This app requests no install or storage permission. Any SHA256 shown comes from GitHub metadata; the downloaded file is not verified by this app.';
+
+  @override
+  String get updatePrivacyHelp =>
+      'Only the configured public GitHub API is contacted. No salary, schedule or overtime data is uploaded, and no GitHub token is bundled. Android uses the normal INTERNET permission without a runtime prompt.';
+
+  @override
+  String get updateOpenReleases => 'View GitHub releases';
+
+  @override
+  String get updateOpenError =>
+      'Could not open a browser. Copy the release URL shown on this page.';
 }

@@ -2,4 +2,5 @@ analyzer:
   exclude:
     - build/**
     - web/**
+    - android/**
 include: ../../../config/quality/analysis_options.yaml

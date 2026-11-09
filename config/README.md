@@ -1,4 +1,17 @@
-# 可提交配置源
+# Public configuration / 可提交配置源
+
+## English
+
+- app/: non-sensitive defaults, schemas and public parameters. updates.json selects the GitHub owner/repository; tools/build/update-config.ps1 generates the application constants.
+- calendar/: holiday/make-up sources with region/year/revision/source/coverage; official data integration remains future scope.
+- quality/: shared Dart analysis rules and check configuration.
+- ci/: future build matrices/publication parameters; never secrets.
+
+Product defaults belong here; user salary, schedule and overrides are runtime data, never written into the repository. Validate config before generating runtime assets/constants. Generated output is not a second source of truth and must not be edited manually. Do not create configuration entry points with no implementing consumer.
+
+Environment variables, --dart-define values, Web bundles and APK constants are public to their recipient. Do not put private keys, service credentials, signing/database passwords or GitHub tokens in them.
+
+## 中文
 
 - `app/`：非敏感默认设置、环境公开参数和未来的配置 schema。
 - `calendar/`：节假日/补班数据源，必须带地区、年份、版本、来源及覆盖范围。

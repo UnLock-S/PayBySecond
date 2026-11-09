@@ -679,13 +679,13 @@ abstract class AppLocalizations {
   /// No description provided for @dateError.
   ///
   /// In en, this message translates to:
-  /// **'Enter a valid date from 1970–2100 (YYYY-MM-DD).'**
+  /// **'Enter a valid year-first date from 1970–2100.'**
   String get dateError;
 
   /// No description provided for @shiftError.
   ///
   /// In en, this message translates to:
-  /// **'Use HH:mm. Start and end must be different.'**
+  /// **'Enter a valid time (e.g. 8 or 08:05). Start and end must differ.'**
   String get shiftError;
 
   /// No description provided for @saveError.
@@ -715,7 +715,7 @@ abstract class AppLocalizations {
   /// No description provided for @clearBody.
   ///
   /// In en, this message translates to:
-  /// **'Salary and schedule will be removed permanently. Language preference is kept.'**
+  /// **'Salary, schedule and overtime records will be removed permanently. Language preference is kept.'**
   String get clearBody;
 
   /// No description provided for @clear.
@@ -727,13 +727,13 @@ abstract class AppLocalizations {
   /// No description provided for @clearError.
   ///
   /// In en, this message translates to:
-  /// **'Could not clear data. Existing data is retained.'**
+  /// **'Cleanup did not finish. Some data may already be removed; please retry.'**
   String get clearError;
 
   /// No description provided for @privacyBody.
   ///
   /// In en, this message translates to:
-  /// **'Salary is stored only on this device, without encryption. Browser cleanup may erase it. Keep your own records.'**
+  /// **'Salary is stored only on this device, without encryption. Browser cleanup may erase it; keep your own records. Optional update checks contact GitHub for version metadata only, without uploading salary.'**
   String get privacyBody;
 
   /// No description provided for @limitations.
@@ -757,7 +757,7 @@ abstract class AppLocalizations {
   /// No description provided for @languageHelp.
   ///
   /// In en, this message translates to:
-  /// **'Changes interface language only, not currency, time zone or salary rules.'**
+  /// **'Selecting a language returns home automatically; currency, time zone and salary rules are unchanged.'**
   String get languageHelp;
 
   /// No description provided for @languageSaveError.
@@ -783,6 +783,480 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load language preference; using Chinese until you choose a language.'**
   String get languageLoadError;
+
+  /// No description provided for @dateInputHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 20261109, 2026/11/9; year first'**
+  String get dateInputHelp;
+
+  /// No description provided for @timeInputHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 8, 08, 805, 8:5 (24-hour clock)'**
+  String get timeInputHelp;
+
+  /// No description provided for @wheelPicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll to select'**
+  String get wheelPicker;
+
+  /// No description provided for @pickerDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get pickerDone;
+
+  /// No description provided for @otTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Overtime'**
+  String get otTitle;
+
+  /// No description provided for @otDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Overtime details'**
+  String get otDetails;
+
+  /// No description provided for @otIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaving on time is a win, too'**
+  String get otIdle;
+
+  /// No description provided for @otRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Overtime in progress'**
+  String get otRunning;
+
+  /// No description provided for @otTotalTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Total overtime'**
+  String get otTotalTime;
+
+  /// No description provided for @otThisTime.
+  ///
+  /// In en, this message translates to:
+  /// **'This session'**
+  String get otThisTime;
+
+  /// No description provided for @otExpected.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected overtime pay'**
+  String get otExpected;
+
+  /// No description provided for @otLegalReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Statutory reference'**
+  String get otLegalReference;
+
+  /// No description provided for @otJoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Time donated: about {amount}. Boss happiness +1'**
+  String otJoke(String amount);
+
+  /// No description provided for @otJokeHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid time valued at 1× the reference hourly rate; not a payroll deduction.'**
+  String get otJokeHelp;
+
+  /// No description provided for @otStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start overtime'**
+  String get otStart;
+
+  /// No description provided for @otStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop overtime'**
+  String get otStop;
+
+  /// No description provided for @otIndependent.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracked separately from regular income.'**
+  String get otIndependent;
+
+  /// No description provided for @otSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Overtime rules'**
+  String get otSettings;
+
+  /// No description provided for @otSettingsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'First save starts a session. After that, start or stop with one tap. Changes apply to new sessions only.'**
+  String get otSettingsHelp;
+
+  /// No description provided for @otPayMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Overtime pay'**
+  String get otPayMode;
+
+  /// No description provided for @otUnpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid'**
+  String get otUnpaid;
+
+  /// No description provided for @otStatutory.
+  ///
+  /// In en, this message translates to:
+  /// **'Statutory reference rate'**
+  String get otStatutory;
+
+  /// No description provided for @otSingle.
+  ///
+  /// In en, this message translates to:
+  /// **'1× hourly rate'**
+  String get otSingle;
+
+  /// No description provided for @otCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom multiplier'**
+  String get otCustom;
+
+  /// No description provided for @otDayType.
+  ///
+  /// In en, this message translates to:
+  /// **'Session day classification'**
+  String get otDayType;
+
+  /// No description provided for @otWeekday.
+  ///
+  /// In en, this message translates to:
+  /// **'Extended working day'**
+  String get otWeekday;
+
+  /// No description provided for @otRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest day'**
+  String get otRest;
+
+  /// No description provided for @otHoliday.
+  ///
+  /// In en, this message translates to:
+  /// **'Statutory holiday'**
+  String get otHoliday;
+
+  /// No description provided for @otCompLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Compensatory leave arranged'**
+  String get otCompLeave;
+
+  /// No description provided for @otCompHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest-day statutory cash reference becomes zero; statutory holidays remain 3×.'**
+  String get otCompHelp;
+
+  /// No description provided for @otBase.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly overtime wage base'**
+  String get otBase;
+
+  /// No description provided for @otMultiplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiplier (0.01–100)'**
+  String get otMultiplier;
+
+  /// No description provided for @otMultiplierError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 0.01–100 with up to two decimal places.'**
+  String get otMultiplierError;
+
+  /// No description provided for @otLegalHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Mainland China, standard hours: hourly base = monthly base ÷ 21.75 ÷ 8. Weekday 1.5×; rest day without compensatory leave 2×; statutory holiday 3×. Select day type manually; split sessions when day type changes. No official holiday lookup. Not for comprehensive or irregular working hours. Estimates are not received wages.'**
+  String get otLegalHelp;
+
+  /// No description provided for @otSaveDefaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Save rules for new sessions'**
+  String get otSaveDefaults;
+
+  /// No description provided for @otSaveStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & start overtime'**
+  String get otSaveStart;
+
+  /// No description provided for @otSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Not saved. Check for clock rollback, overlapping records or the 2,000-record limit, then retry.'**
+  String get otSaveError;
+
+  /// No description provided for @otLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Overtime data could not be loaded. Existing data is retained; retry to continue.'**
+  String get otLoadError;
+
+  /// No description provided for @otUnpaidValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Total unpaid-time value'**
+  String get otUnpaidValue;
+
+  /// No description provided for @otHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Session history'**
+  String get otHistory;
+
+  /// No description provided for @otHistoryHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 2,000 sessions, never auto-deleted. Correct an end time if you forgot to stop (UTC+08:00, minute precision).'**
+  String get otHistoryHelp;
+
+  /// No description provided for @otEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No overtime yet. Keep up the good habit.'**
+  String get otEmpty;
+
+  /// No description provided for @otCorrectEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct end time'**
+  String get otCorrectEnd;
+
+  /// No description provided for @otDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this session?'**
+  String get otDeleteTitle;
+
+  /// No description provided for @otDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently removes the local record and updates totals.'**
+  String get otDeleteBody;
+
+  /// No description provided for @otMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more sessions'**
+  String get otMore;
+
+  /// No description provided for @otEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End date'**
+  String get otEndDate;
+
+  /// No description provided for @otEndTime.
+  ///
+  /// In en, this message translates to:
+  /// **'End time'**
+  String get otEndTime;
+
+  /// No description provided for @otEndError.
+  ///
+  /// In en, this message translates to:
+  /// **'End must be between session start and now.'**
+  String get otEndError;
+
+  /// No description provided for @otCorrectionHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the end in UTC+08:00. This recalculates the session; overlaps are not allowed.'**
+  String get otCorrectionHelp;
+
+  /// No description provided for @otSaveCorrection.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & recalculate session'**
+  String get otSaveCorrection;
+
+  /// No description provided for @softwareUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Software update'**
+  String get softwareUpdate;
+
+  /// No description provided for @updateMenuSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub releases, notes and manual checks'**
+  String get updateMenuSummary;
+
+  /// No description provided for @updateLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading installed version…'**
+  String get updateLoading;
+
+  /// No description provided for @updateInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed: {version}'**
+  String updateInstalled(String version);
+
+  /// No description provided for @updateReleaseVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Release: {version}'**
+  String updateReleaseVersion(String version);
+
+  /// No description provided for @updateFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Update available: {version}'**
+  String updateFound(String version);
+
+  /// No description provided for @updateIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates have not been checked yet.'**
+  String get updateIdle;
+
+  /// No description provided for @updateChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking GitHub releases…'**
+  String get updateChecking;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'A newer stable release is available.'**
+  String get updateAvailable;
+
+  /// No description provided for @updateCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'No newer stable release was found.'**
+  String get updateCurrent;
+
+  /// No description provided for @updateNoRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'No publicly accessible stable release. The repository may be private or have no published release.'**
+  String get updateNoRelease;
+
+  /// No description provided for @updateOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'This check did not complete. Check your connection and retry. Any displayed release may be cached.'**
+  String get updateOffline;
+
+  /// No description provided for @updateRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub has limited requests. Please try again later.'**
+  String get updateRateLimited;
+
+  /// No description provided for @updateInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Release metadata does not meet update rules; this check was rejected.'**
+  String get updateInvalid;
+
+  /// No description provided for @updatePreferenceError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read or save update preferences. Please retry.'**
+  String get updatePreferenceError;
+
+  /// No description provided for @updateWebHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'APK checks are for Android. The Web app is updated by deployment; you can still view GitHub releases.'**
+  String get updateWebHelp;
+
+  /// No description provided for @updateLastCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Last successful check: {time}'**
+  String updateLastCheck(String time);
+
+  /// No description provided for @updateCheckNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Check now'**
+  String get updateCheckNow;
+
+  /// No description provided for @updateFrequencyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual checks are at least 30 seconds apart. Only stable releases are checked, not prereleases.'**
+  String get updateFrequencyHelp;
+
+  /// No description provided for @updateAutomatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Check automatically on startup'**
+  String get updateAutomatic;
+
+  /// No description provided for @updateAutomaticHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'On by default, at most once per 24 hours. No background polling; turn off at any time.'**
+  String get updateAutomaticHelp;
+
+  /// No description provided for @updateNoNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'No release notes were provided.'**
+  String get updateNoNotes;
+
+  /// No description provided for @updateMissingApk.
+  ///
+  /// In en, this message translates to:
+  /// **'This release has no matching APK for this architecture. Check the release page.'**
+  String get updateMissingApk;
+
+  /// No description provided for @updateDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download APK in browser'**
+  String get updateDownload;
+
+  /// No description provided for @updateInstallHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Download with the system browser, then install manually. APKs must retain the original signing certificate. This app requests no install or storage permission. Any SHA256 shown comes from GitHub metadata; the downloaded file is not verified by this app.'**
+  String get updateInstallHelp;
+
+  /// No description provided for @updatePrivacyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the configured public GitHub API is contacted. No salary, schedule or overtime data is uploaded, and no GitHub token is bundled. Android uses the normal INTERNET permission without a runtime prompt.'**
+  String get updatePrivacyHelp;
+
+  /// No description provided for @updateOpenReleases.
+  ///
+  /// In en, this message translates to:
+  /// **'View GitHub releases'**
+  String get updateOpenReleases;
+
+  /// No description provided for @updateOpenError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open a browser. Copy the release URL shown on this page.'**
+  String get updateOpenError;
 }
 
 class _AppLocalizationsDelegate

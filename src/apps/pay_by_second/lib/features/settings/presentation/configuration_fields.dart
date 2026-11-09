@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:earnings_core/earnings_core.dart';
 import 'package:flutter/material.dart';
 import '../../../application/settings.dart';
+import '../../../application/date_time_input.dart';
+import '../../../shared/presentation/date_time_field.dart';
 import '../../../shared/presentation/design.dart';
 
 enum ConfigSection { salary, calculation, schedule, calendar, display }
@@ -47,23 +49,8 @@ class ConfigurationDraft {
   late Map<String, bool> overrides;
   static String _time(int m) =>
       '${(m ~/ 60).toString().padLeft(2, '0')}:${(m % 60).toString().padLeft(2, '0')}';
-  static DateTime? parseDate(String text) {
-    final d = DateTime.tryParse(text.trim());
-    if (d == null ||
-        d.year < 1970 ||
-        d.year > 2100 ||
-        EarningsPolicy.dateKey(d) != text.trim()) {
-      return null;
-    }
-    return DateTime.utc(d.year, d.month, d.day);
-  }
-
-  static int? parseTime(String text) {
-    if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(text.trim())) return null;
-    final p = text.trim().split(':').map(int.parse).toList();
-    if (p[0] > 23 || p[1] > 59) return null;
-    return p[0] * 60 + p[1];
-  }
+  static DateTime? parseDate(String text) => parseFlexibleDate(text);
+  static int? parseTime(String text) => parseFlexibleTime(text);
 
   String get fingerprint => jsonEncode([
     salary.text,
@@ -137,17 +124,11 @@ class ConfigurationFields extends StatelessWidget {
                   : l.salaryError,
             ),
             const SizedBox(height: 24),
-            TextFormField(
+            DateTimeField(
               key: const Key('start-date-input'),
               controller: d.date,
-              onChanged: (_) => changed(),
-              decoration: InputDecoration(
-                labelText: l.startDate,
-                hintText: 'YYYY-MM-DD',
-              ),
-              validator: (v) => ConfigurationDraft.parseDate(v ?? '') == null
-                  ? l.dateError
-                  : null,
+              label: l.startDate,
+              onChanged: changed,
             ),
           ],
         );
@@ -211,7 +192,7 @@ class ConfigurationFields extends StatelessWidget {
         String? timeError(String? _) =>
             ConfigurationDraft.parseTime(d.start.text) == null ||
                 ConfigurationDraft.parseTime(d.end.text) == null ||
-                d.start.text == d.end.text
+                parseFlexibleTime(d.start.text) == parseFlexibleTime(d.end.text)
             ? l.shiftError
             : null;
         return Column(
@@ -241,25 +222,21 @@ class ConfigurationFields extends StatelessWidget {
                 child: Text(l.noWorkdays, style: const TextStyle(color: muted)),
               ),
             const SizedBox(height: 28),
-            TextFormField(
+            DateTimeField(
               key: const Key('shift-start-input'),
               controller: d.start,
-              onChanged: (_) => changed(),
-              decoration: InputDecoration(
-                labelText: l.shiftStart,
-                hintText: 'HH:mm',
-              ),
+              label: l.shiftStart,
+              time: true,
+              onChanged: changed,
               validator: timeError,
             ),
             const SizedBox(height: 24),
-            TextFormField(
+            DateTimeField(
               key: const Key('shift-end-input'),
               controller: d.end,
-              onChanged: (_) => changed(),
-              decoration: InputDecoration(
-                labelText: l.shiftEnd,
-                hintText: 'HH:mm',
-              ),
+              label: l.shiftEnd,
+              time: true,
+              onChanged: changed,
               validator: timeError,
             ),
             const SizedBox(height: 12),
@@ -330,12 +307,7 @@ class ConfigurationFields extends StatelessWidget {
                 final seed =
                     ConfigurationDraft.parseDate(d.date.text) ??
                     DateTime.utc(2026);
-                final date = await showDatePicker(
-                  context: context,
-                  initialDate: seed,
-                  firstDate: DateTime(1970),
-                  lastDate: DateTime(2100, 12, 31),
-                );
+                final date = await pickFlexibleDate(context, seed);
                 if (date != null) {
                   d.overrides[EarningsPolicy.dateKey(date)] = false;
                   changed();

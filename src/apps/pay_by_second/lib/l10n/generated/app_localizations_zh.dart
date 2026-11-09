@@ -301,10 +301,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get salaryError => '请输入非负金额，最多两位小数。';
 
   @override
-  String get dateError => '请输入 1970–2100 年的有效日期（YYYY-MM-DD）。';
+  String get dateError => '请输入1970至2100年的有效日期，年份在前。';
 
   @override
-  String get shiftError => '时间格式为 HH:mm，开始与结束不能相同。';
+  String get shiftError => '请输入有效时间（如8、08:05），开始和结束不能相同。';
 
   @override
   String get saveError => '保存失败，输入已保留，请重试。';
@@ -319,16 +319,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clearTitle => '清空本机薪资数据？';
 
   @override
-  String get clearBody => '将删除薪资和排班，无法撤销。语言偏好保留。';
+  String get clearBody => '薪资、工作时间和加班记录将永久移除，语言偏好保留。';
 
   @override
   String get clear => '清空薪资数据';
 
   @override
-  String get clearError => '清空失败，原数据保留。';
+  String get clearError => '清理未完成，部分数据可能已移除，请重试。';
 
   @override
-  String get privacyBody => '薪资仅保存在此设备，未加密。浏览器清理存储后可能丢失，不应作为唯一记录。';
+  String get privacyBody =>
+      '薪资仅保存在本机，尚未加密，清理浏览器数据可能丢失，请自行备份。可选的更新检查只访问GitHub版本信息，不上传薪资。';
 
   @override
   String get limitations => '当前范围';
@@ -340,7 +341,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get licenses => '开源许可';
 
   @override
-  String get languageHelp => '仅切换界面语言，不改变币种、时区或薪资规则。';
+  String get languageHelp => '选择语言后自动返回首页；不改币种、时区或薪资规则。';
 
   @override
   String get languageSaveError => '语言保存失败，当前语言保持不变。';
@@ -353,4 +354,254 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get languageLoadError => '语言偏好读取失败，暂用中文；可在设置中重选。';
+
+  @override
+  String get dateInputHelp => '如 20261109、2026/11/9、2026年11月9日';
+
+  @override
+  String get timeInputHelp => '如 8、08、805、8:5（24小时制）';
+
+  @override
+  String get wheelPicker => '滑动选择';
+
+  @override
+  String get pickerDone => '确定';
+
+  @override
+  String get otTitle => '加班账本';
+
+  @override
+  String get otDetails => '加班统计';
+
+  @override
+  String get otIdle => '准点下班，也是一种胜利';
+
+  @override
+  String get otRunning => '加班中';
+
+  @override
+  String get otTotalTime => '累计加班';
+
+  @override
+  String get otThisTime => '本次加班';
+
+  @override
+  String get otExpected => '约定加班费估算';
+
+  @override
+  String get otLegalReference => '法定参考金额';
+
+  @override
+  String otJoke(String amount) {
+    return '这波约亏 $amount，老板快乐 +1';
+  }
+
+  @override
+  String get otJokeHelp => '仅按1倍参考时薪估算无薪时间价值，不是实际扣薪。';
+
+  @override
+  String get otStart => '一键加班';
+
+  @override
+  String get otStop => '结束加班';
+
+  @override
+  String get otIndependent => '加班单独统计，不叠加到首页正常工资。';
+
+  @override
+  String get otSettings => '加班规则';
+
+  @override
+  String get otSettingsHelp => '首次保存并开始；以后首页一键开始或结束。规则只用于新记录，已有记录保留原规则。';
+
+  @override
+  String get otPayMode => '加班工资';
+
+  @override
+  String get otUnpaid => '无加班工资';
+
+  @override
+  String get otStatutory => '法定参考倍数';
+
+  @override
+  String get otSingle => '1倍工资';
+
+  @override
+  String get otCustom => '自定义倍数';
+
+  @override
+  String get otDayType => '本次加班日期性质';
+
+  @override
+  String get otWeekday => '工作日延时';
+
+  @override
+  String get otRest => '休息日';
+
+  @override
+  String get otHoliday => '法定节假日';
+
+  @override
+  String get otCompLeave => '休息日已安排补休';
+
+  @override
+  String get otCompHelp => '仅影响休息日法定现金参考金额，设为0；法定节假日仍按3倍。';
+
+  @override
+  String get otBase => '加班计算月工资基数';
+
+  @override
+  String get otMultiplier => '工资倍数（0.01至100）';
+
+  @override
+  String get otMultiplierError => '请输入0.01至100，最多两位小数。';
+
+  @override
+  String get otLegalHelp =>
+      '中国大陆标准工时参考：时薪=所填月基数÷21.75÷8。工作日1.5倍、休息日未补休2倍、法定节假日3倍。日期性质需手选，跨日性质变化请分段记录；不自动识别官方节假日。不适用于综合或不定时工时，金额为估算而非已到账工资。';
+
+  @override
+  String get otSaveDefaults => '保存新加班规则';
+
+  @override
+  String get otSaveStart => '保存并开始加班';
+
+  @override
+  String get otSaveError => '操作未保存。请检查时间是否倒退、记录是否重叠或达到2000条上限，然后重试。';
+
+  @override
+  String get otLoadError => '加班数据读取失败，已保留原数据。重试前禁止覆盖。';
+
+  @override
+  String get otUnpaidValue => '累计无薪时间参考价值';
+
+  @override
+  String get otHistory => '加班记录';
+
+  @override
+  String get otHistoryHelp => '上限2000条，不自动删除；忘记结束可修正结束时间（UTC+08:00，精确到分钟）。';
+
+  @override
+  String get otEmpty => '还没有加班记录，保持这个好习惯。';
+
+  @override
+  String get otCorrectEnd => '修正结束时间';
+
+  @override
+  String get otDeleteTitle => '删除这条加班记录？';
+
+  @override
+  String get otDeleteBody => '该记录会从本地永久删除，统计随之更新。';
+
+  @override
+  String get otMore => '加载更多记录';
+
+  @override
+  String get otEndDate => '结束日期';
+
+  @override
+  String get otEndTime => '结束时间';
+
+  @override
+  String get otEndError => '结束时间不能早于开始，不能晚于现在。';
+
+  @override
+  String get otCorrectionHelp => '按UTC+08:00输入结束日期和时间。修正将重算这条记录；不能与其他加班重叠。';
+
+  @override
+  String get otSaveCorrection => '保存并重算本条记录';
+
+  @override
+  String get softwareUpdate => '软件更新';
+
+  @override
+  String get updateMenuSummary => 'GitHub发行版、版本说明与手动检查';
+
+  @override
+  String get updateLoading => '正在读取版本信息…';
+
+  @override
+  String updateInstalled(String version) {
+    return '当前版本 $version';
+  }
+
+  @override
+  String updateReleaseVersion(String version) {
+    return '发行版本 $version';
+  }
+
+  @override
+  String updateFound(String version) {
+    return '发现新版 $version';
+  }
+
+  @override
+  String get updateIdle => '尚未检查更新';
+
+  @override
+  String get updateChecking => '正在检查GitHub发行版…';
+
+  @override
+  String get updateAvailable => '有较新的稳定发行版';
+
+  @override
+  String get updateCurrent => '未发现比当前版本更新的稳定发行版';
+
+  @override
+  String get updateNoRelease => '尚无可公开访问的稳定发行版。仓库可能仍为私有，或尚未发布Release。';
+
+  @override
+  String get updateOffline => '本次检查未完成，请检查网络后重试。已有版本信息可能来自缓存。';
+
+  @override
+  String get updateRateLimited => 'GitHub限制了请求，请稍后再试。';
+
+  @override
+  String get updateInvalid => '发行版信息不符合更新规则，已停止本次更新提示。';
+
+  @override
+  String get updatePreferenceError => '无法读取或保存更新设置，请重试。';
+
+  @override
+  String get updateWebHelp => 'APK更新检查用于Android版；Web版由网站部署更新。可打开GitHub发行页查看。';
+
+  @override
+  String updateLastCheck(String time) {
+    return '上次成功检查：$time';
+  }
+
+  @override
+  String get updateCheckNow => '立即检查';
+
+  @override
+  String get updateFrequencyHelp => '手动检查间隔至少30秒；只检查正式稳定版，不跟随测试预发布。';
+
+  @override
+  String get updateAutomatic => '启动时自动检查';
+
+  @override
+  String get updateAutomaticHelp => '默认开启，最多每24小时一次；后台不轮询，可随时关闭。';
+
+  @override
+  String get updateNoNotes => '该发行版没有填写更新说明。';
+
+  @override
+  String get updateMissingApk => '发行版中没有匹配当前架构的APK。请到发行页确认。';
+
+  @override
+  String get updateDownload => '用浏览器下载APK';
+
+  @override
+  String get updateInstallHelp =>
+      '由系统浏览器下载后手动安装；安装包需沿用原签名。此应用不申请安装或存储权限。SHA256若显示，来自GitHub元数据，本应用未校验下载文件。';
+
+  @override
+  String get updatePrivacyHelp =>
+      '仅向配置的GitHub公开接口检查版本，不上传薪资、排班或加班记录，不内置GitHub令牌。联网使用普通INTERNET权限，不弹出授权框。';
+
+  @override
+  String get updateOpenReleases => '查看GitHub发行页';
+
+  @override
+  String get updateOpenError => '无法打开浏览器，请复制页面中的发行链接。';
 }

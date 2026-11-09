@@ -110,22 +110,136 @@
   "discard": "Discard",
   "keepEditing": "Keep editing",
   "salaryError": "Enter a non-negative amount with up to two decimal places.",
-  "dateError": "Enter a valid date from 1970–2100 (YYYY-MM-DD).",
-  "shiftError": "Use HH:mm. Start and end must be different.",
+  "dateError": "Enter a valid year-first date from 1970–2100.",
+  "shiftError": "Enter a valid time (e.g. 8 or 08:05). Start and end must differ.",
   "saveError": "Could not save. Your input is retained; please retry.",
   "loadError": "Could not load local data. Existing data is retained. Retry or configure again.",
   "retry": "Retry",
   "clearTitle": "Clear local salary data?",
-  "clearBody": "Salary and schedule will be removed permanently. Language preference is kept.",
+  "clearBody": "Salary, schedule and overtime records will be removed permanently. Language preference is kept.",
   "clear": "Clear salary data",
-  "clearError": "Could not clear data. Existing data is retained.",
-  "privacyBody": "Salary is stored only on this device, without encryption. Browser cleanup may erase it. Keep your own records.",
+  "clearError": "Cleanup did not finish. Some data may already be removed; please retry.",
+  "privacyBody": "Salary is stored only on this device, without encryption. Browser cleanup may erase it; keep your own records. Optional update checks contact GitHub for version metadata only, without uploading salary.",
   "limitations": "Current scope",
   "limitationsBody": "Local preview. Accounts, official holiday calendars, salary history and sync are not connected yet.",
   "licenses": "Open-source licenses",
-  "languageHelp": "Changes interface language only, not currency, time zone or salary rules.",
+  "languageHelp": "Selecting a language returns home automatically; currency, time zone and salary rules are unchanged.",
   "languageSaveError": "Could not save language. The current language is unchanged.",
   "noWorkdays": "With no workdays selected, work-mode income is zero.",
   "zeroSalary": "Salary is zero",
-  "languageLoadError": "Could not load language preference; using Chinese until you choose a language."
+  "languageLoadError": "Could not load language preference; using Chinese until you choose a language.",
+  "dateInputHelp": "e.g. 20261109, 2026/11/9; year first",
+  "timeInputHelp": "e.g. 8, 08, 805, 8:5 (24-hour clock)",
+  "wheelPicker": "Scroll to select",
+  "pickerDone": "Done",
+  "otTitle": "Overtime",
+  "otDetails": "Overtime details",
+  "otIdle": "Leaving on time is a win, too",
+  "otRunning": "Overtime in progress",
+  "otTotalTime": "Total overtime",
+  "otThisTime": "This session",
+  "otExpected": "Expected overtime pay",
+  "otLegalReference": "Statutory reference",
+  "otJoke": "Time donated: about {amount}. Boss happiness +1",
+  "otJokeHelp": "Unpaid time valued at 1× the reference hourly rate; not a payroll deduction.",
+  "otStart": "Start overtime",
+  "otStop": "Stop overtime",
+  "otIndependent": "Tracked separately from regular income.",
+  "otSettings": "Overtime rules",
+  "otSettingsHelp": "First save starts a session. After that, start or stop with one tap. Changes apply to new sessions only.",
+  "otPayMode": "Overtime pay",
+  "otUnpaid": "Unpaid",
+  "otStatutory": "Statutory reference rate",
+  "otSingle": "1× hourly rate",
+  "otCustom": "Custom multiplier",
+  "otDayType": "Session day classification",
+  "otWeekday": "Extended working day",
+  "otRest": "Rest day",
+  "otHoliday": "Statutory holiday",
+  "otCompLeave": "Compensatory leave arranged",
+  "otCompHelp": "Rest-day statutory cash reference becomes zero; statutory holidays remain 3×.",
+  "otBase": "Monthly overtime wage base",
+  "otMultiplier": "Multiplier (0.01–100)",
+  "otMultiplierError": "Enter 0.01–100 with up to two decimal places.",
+  "otLegalHelp": "Mainland China, standard hours: hourly base = monthly base ÷ 21.75 ÷ 8. Weekday 1.5×; rest day without compensatory leave 2×; statutory holiday 3×. Select day type manually; split sessions when day type changes. No official holiday lookup. Not for comprehensive or irregular working hours. Estimates are not received wages.",
+  "otSaveDefaults": "Save rules for new sessions",
+  "otSaveStart": "Save & start overtime",
+  "otSaveError": "Not saved. Check for clock rollback, overlapping records or the 2,000-record limit, then retry.",
+  "otLoadError": "Overtime data could not be loaded. Existing data is retained; retry to continue.",
+  "otUnpaidValue": "Total unpaid-time value",
+  "otHistory": "Session history",
+  "otHistoryHelp": "Up to 2,000 sessions, never auto-deleted. Correct an end time if you forgot to stop (UTC+08:00, minute precision).",
+  "otEmpty": "No overtime yet. Keep up the good habit.",
+  "otCorrectEnd": "Correct end time",
+  "otDeleteTitle": "Delete this session?",
+  "otDeleteBody": "This permanently removes the local record and updates totals.",
+  "otMore": "Show more sessions",
+  "otEndDate": "End date",
+  "otEndTime": "End time",
+  "otEndError": "End must be between session start and now.",
+  "otCorrectionHelp": "Enter the end in UTC+08:00. This recalculates the session; overlaps are not allowed.",
+  "otSaveCorrection": "Save & recalculate session",
+  "@otJoke": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "softwareUpdate": "Software update",
+  "updateMenuSummary": "GitHub releases, notes and manual checks",
+  "updateLoading": "Reading installed version…",
+  "updateInstalled": "Installed: {version}",
+  "updateReleaseVersion": "Release: {version}",
+  "updateFound": "Update available: {version}",
+  "updateIdle": "Updates have not been checked yet.",
+  "updateChecking": "Checking GitHub releases…",
+  "updateAvailable": "A newer stable release is available.",
+  "updateCurrent": "No newer stable release was found.",
+  "updateNoRelease": "No publicly accessible stable release. The repository may be private or have no published release.",
+  "updateOffline": "This check did not complete. Check your connection and retry. Any displayed release may be cached.",
+  "updateRateLimited": "GitHub has limited requests. Please try again later.",
+  "updateInvalid": "Release metadata does not meet update rules; this check was rejected.",
+  "updatePreferenceError": "Could not read or save update preferences. Please retry.",
+  "updateWebHelp": "APK checks are for Android. The Web app is updated by deployment; you can still view GitHub releases.",
+  "updateLastCheck": "Last successful check: {time}",
+  "updateCheckNow": "Check now",
+  "updateFrequencyHelp": "Manual checks are at least 30 seconds apart. Only stable releases are checked, not prereleases.",
+  "updateAutomatic": "Check automatically on startup",
+  "updateAutomaticHelp": "On by default, at most once per 24 hours. No background polling; turn off at any time.",
+  "updateNoNotes": "No release notes were provided.",
+  "updateMissingApk": "This release has no matching APK for this architecture. Check the release page.",
+  "updateDownload": "Download APK in browser",
+  "updateInstallHelp": "Download with the system browser, then install manually. APKs must retain the original signing certificate. This app requests no install or storage permission. Any SHA256 shown comes from GitHub metadata; the downloaded file is not verified by this app.",
+  "updatePrivacyHelp": "Only the configured public GitHub API is contacted. No salary, schedule or overtime data is uploaded, and no GitHub token is bundled. Android uses the normal INTERNET permission without a runtime prompt.",
+  "updateOpenReleases": "View GitHub releases",
+  "updateOpenError": "Could not open a browser. Copy the release URL shown on this page.",
+  "@updateInstalled": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@updateReleaseVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@updateFound": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@updateLastCheck": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

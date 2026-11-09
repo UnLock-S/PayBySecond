@@ -1,3 +1,5 @@
+import '../../../application/app_updates.dart';
+import '../../updates/presentation/updates_page.dart';
 import 'package:flutter/material.dart';
 import '../../../application/settings.dart';
 import '../../../shared/presentation/design.dart';
@@ -8,6 +10,7 @@ class SettingsHub extends StatefulWidget {
   const SettingsHub({
     super.key,
     required this.settings,
+    this.updates,
     required this.now,
     required this.onSave,
     required this.onLanguageChanged,
@@ -15,6 +18,7 @@ class SettingsHub extends StatefulWidget {
     required this.languageLoadFailed,
   });
   final Settings settings;
+  final UpdateController? updates;
   final DateTime now;
   final Future<void> Function(Settings) onSave;
   final Future<void> Function(String) onLanguageChanged;
@@ -115,6 +119,21 @@ class _SettingsHubState extends State<SettingsHub> {
               ),
             ),
             const SizedBox(height: 20),
+            if (widget.updates != null) ...[
+              Surface(
+                child: _item(
+                  Icons.system_update_alt,
+                  l.softwareUpdate,
+                  l.updateMenuSummary,
+                  () => Navigator.of(context).push<void>(
+                    MaterialPageRoute(
+                      builder: (_) => UpdatesPage(controller: widget.updates!),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             Surface(
               child: _item(
                 Icons.info_outline,
@@ -162,7 +181,7 @@ class LanguagePage extends StatefulWidget {
 
 class _LanguagePageState extends State<LanguagePage> {
   bool _saving = false, _failed = false;
-  late bool _loadWarning = widget.loadFailed;
+  late final bool _loadWarning = widget.loadFailed;
   Future<void> _change(String value) async {
     if (_saving || value == Localizations.localeOf(context).languageCode) {
       return;
@@ -173,7 +192,10 @@ class _LanguagePageState extends State<LanguagePage> {
     });
     try {
       await widget.onChanged(value);
-      if (mounted) setState(() => _loadWarning = false);
+      if (mounted) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        return;
+      }
     } catch (_) {
       if (mounted) setState(() => _failed = true);
     }

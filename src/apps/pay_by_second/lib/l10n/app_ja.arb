@@ -96,22 +96,136 @@
   "discard": "変更破棄",
   "keepEditing": "編集継続",
   "salaryError": "0以上、小数点以下2桁以内で入力。",
-  "dateError": "1970～2100年の有効な日付を入力（YYYY-MM-DD）。",
-  "shiftError": "HH:mm形式で入力。始業と終業は別時刻に設定。",
+  "dateError": "1970～2100年の有効な日付を年・月・日の順で入力してください。",
+  "shiftError": "有効な時刻（例：8、08:05）を入力し、開始と終了を別時刻にしてください。",
   "saveError": "保存失敗。入力内容は保持されています。再試行してください。",
   "loadError": "端末内データの読込失敗。元データは保持。再読込または再設定。",
   "retry": "再試行",
   "clearTitle": "端末内の給与データを削除？",
-  "clearBody": "給与・勤務設定を完全削除。言語設定は保持。",
+  "clearBody": "給与・勤務時間・時間外勤務履歴を完全に削除します。言語設定は保持します。",
   "clear": "給与データ削除",
-  "clearError": "削除失敗。元データは保持。",
-  "privacyBody": "給与は端末内のみ保存、暗号化なし。閲覧履歴の消去等で失われる場合があります。別途記録を保管してください。",
+  "clearError": "削除が完了しませんでした。一部データは削除済みの可能性があります。再試行してください。",
+  "privacyBody": "給与は端末内のみ保存し、未暗号化です。ブラウザのデータ削除で失われる場合があるため、別途保管してください。任意の更新確認はGitHubの版情報だけを取得し、給与を送信しません。",
   "limitations": "対応範囲",
   "limitationsBody": "端末内試用版。認証・公式祝日・給与履歴・端末間同期は未対応。",
   "licenses": "利用許諾",
-  "languageHelp": "表示言語のみ変更。通貨・時刻基準・給与計算は変更なし。",
+  "languageHelp": "言語を選ぶと自動的にホームへ戻ります。通貨・時間帯・給与規則は変わりません。",
   "languageSaveError": "言語設定の保存失敗。現在の言語を保持。",
   "noWorkdays": "勤務曜日未選択の場合、勤務時間限定の収入は0。",
   "zeroSalary": "月給0",
-  "languageLoadError": "言語設定の読込失敗。一時的に中国語を使用。設定から変更可能。"
+  "languageLoadError": "言語設定の読込失敗。一時的に中国語を使用。設定から変更可能。",
+  "dateInputHelp": "例：20261109、2026/11/9、2026年11月9日",
+  "timeInputHelp": "例：8、08、805、8:5（24時間制）",
+  "wheelPicker": "回転選択",
+  "pickerDone": "確定",
+  "otTitle": "時間外勤務",
+  "otDetails": "時間外勤務集計",
+  "otIdle": "定時退勤も立派な勝利",
+  "otRunning": "時間外勤務中",
+  "otTotalTime": "累計時間",
+  "otThisTime": "今回の勤務",
+  "otExpected": "設定に基づく残業代概算",
+  "otLegalReference": "中国法定基準の参考額",
+  "otJoke": "約 {amount} 分の時間を寄付。上司の幸福度 +1",
+  "otJokeHelp": "無給時間を参考時給の1倍で換算した目安です。給与控除ではありません。",
+  "otStart": "勤務開始",
+  "otStop": "勤務終了",
+  "otIndependent": "通常給与とは別に集計します。",
+  "otSettings": "時間外勤務設定",
+  "otSettingsHelp": "初回保存で計測開始。以後はワンタップで開始・終了できます。設定変更は新規記録に適用します。",
+  "otPayMode": "残業代",
+  "otUnpaid": "残業代なし",
+  "otStatutory": "中国法定基準の倍率",
+  "otSingle": "時給の1倍",
+  "otCustom": "倍率指定",
+  "otDayType": "勤務日の区分",
+  "otWeekday": "通常勤務日の延長",
+  "otRest": "休日",
+  "otHoliday": "中国の法定祝日",
+  "otCompLeave": "休日勤務の振替休暇あり",
+  "otCompHelp": "休日勤務の法定現金参考額を0にします。法定祝日は3倍です。",
+  "otBase": "残業代計算用の月額給与",
+  "otMultiplier": "倍率（0.01～100）",
+  "otMultiplierError": "0.01～100を小数第2位までで入力してください。",
+  "otLegalHelp": "中国大陸の標準労働時間制を参照：時給＝入力月額÷21.75÷8。通常勤務日1.5倍、振替休暇なしの休日2倍、法定祝日3倍。日区分は手動指定し、区分が変わる場合は記録を分けてください。祝日の自動判定、変形・不定時労働時間制には未対応。金額は入金済み給与ではなく概算です。",
+  "otSaveDefaults": "新規勤務の設定を保存",
+  "otSaveStart": "保存して勤務開始",
+  "otSaveError": "保存できませんでした。時刻の逆行、記録の重複、2000件の上限を確認して再試行してください。",
+  "otLoadError": "時間外勤務の読込失敗。元データを保持しています。再試行してください。",
+  "otUnpaidValue": "無給時間の累計参考価値",
+  "otHistory": "勤務履歴",
+  "otHistoryHelp": "最大2000件、自動削除なし。終了忘れは終了時刻を修正できます（UTC+08:00、分単位）。",
+  "otEmpty": "勤務記録はまだありません。定時退勤を続けましょう。",
+  "otCorrectEnd": "終了時刻修正",
+  "otDeleteTitle": "この勤務記録を削除しますか？",
+  "otDeleteBody": "端末内の記録を完全に削除し、集計を更新します。",
+  "otMore": "履歴を追加表示",
+  "otEndDate": "終了日",
+  "otEndTime": "終了時刻",
+  "otEndError": "開始以降、現在以前の終了時刻を指定してください。",
+  "otCorrectionHelp": "UTC+08:00の終了日時を入力します。再計算後の勤務時間が他の記録と重複しないようにしてください。",
+  "otSaveCorrection": "保存して記録を再計算",
+  "@otJoke": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "softwareUpdate": "ソフトウェア更新",
+  "updateMenuSummary": "GitHub公開版・更新内容・手動確認",
+  "updateLoading": "バージョンを読込中…",
+  "updateInstalled": "現在の版：{version}",
+  "updateReleaseVersion": "公開版：{version}",
+  "updateFound": "新版 {version} を検出",
+  "updateIdle": "更新は未確認です。",
+  "updateChecking": "GitHub公開版を確認中…",
+  "updateAvailable": "新しい安定版があります。",
+  "updateCurrent": "現在の版より新しい安定版はありません。",
+  "updateNoRelease": "公開取得できる安定版がありません。非公開リポジトリ、または未公開の可能性があります。",
+  "updateOffline": "確認できませんでした。通信状態を確認して再試行してください。表示中の公開版情報は保存済みの場合があります。",
+  "updateRateLimited": "GitHubの要求制限中です。時間を置いて再試行してください。",
+  "updateInvalid": "公開版の情報が更新条件に合わないため、今回の確認を中止しました。",
+  "updatePreferenceError": "更新設定の読込・保存に失敗しました。再試行してください。",
+  "updateWebHelp": "APK更新確認はAndroid版用です。Web版はサイトの配信で更新します。GitHub公開ページは参照できます。",
+  "updateLastCheck": "前回の確認成功：{time}",
+  "updateCheckNow": "今すぐ確認",
+  "updateFrequencyHelp": "手動確認は30秒以上の間隔で実行します。安定版のみ対象で、先行公開版は対象外です。",
+  "updateAutomatic": "起動時に自動確認",
+  "updateAutomaticHelp": "初期設定は有効、24時間に最大1回。バックグラウンドで定期確認せず、いつでも無効にできます。",
+  "updateNoNotes": "更新内容の記載はありません。",
+  "updateMissingApk": "現在の構成に対応するAPKがありません。公開ページを確認してください。",
+  "updateDownload": "ブラウザでAPK取得",
+  "updateInstallHelp": "システムブラウザで取得後、手動で導入します。元と同じ署名証明書が必要です。本アプリは導入・保存権限を要求しません。表示するSHA256はGitHubの情報で、取得ファイルを本アプリが検証するものではありません。",
+  "updatePrivacyHelp": "設定済みのGitHub公開APIだけに接続します。給与・勤務表・時間外勤務履歴は送信せず、GitHubトークンも含めません。Androidの通常INTERNET権限を使用し、実行時の権限要求はありません。",
+  "updateOpenReleases": "GitHub公開ページを表示",
+  "updateOpenError": "ブラウザを開けませんでした。表示中の公開URLをコピーしてください。",
+  "@updateInstalled": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@updateReleaseVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@updateFound": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@updateLastCheck": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

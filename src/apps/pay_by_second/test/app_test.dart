@@ -199,7 +199,9 @@ void main() {
       await tap(tester, find.byKey(const Key('open-settings')));
       await tap(tester, find.text('语言'));
       await tap(tester, find.byKey(const Key('language-en')));
-      expect(find.text('Language'), findsOneWidget);
+      expect(find.text('Every second adds up.'), findsOneWidget);
+      await tap(tester, find.byKey(const Key('open-settings')));
+      await tap(tester, find.text('Language'));
       expect(languages.value, 'en');
       languages.fail = true;
       await tap(tester, find.byKey(const Key('language-ja')));
@@ -212,7 +214,7 @@ void main() {
       expect(languages.value, 'en');
       languages.fail = false;
       await tap(tester, find.byKey(const Key('language-ja')));
-      expect(find.text('言語'), findsOneWidget);
+      expect(find.text('毎秒、積み重なる収入。'), findsOneWidget);
       expect(languages.value, 'ja');
       expect(jsonEncode(repo.value!.toJson()), before);
       expect(repo.writes, 0);

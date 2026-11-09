@@ -1,4 +1,25 @@
-# 验证计划
+# Verification plan / 验证计划
+
+## English
+
+Full-product plan, not a pass report. Some cases are implemented in the Web MVP; see [historical MVP results](web-mvp-validation.md) and newer feature reports. Unimplemented features are not qualified. Requirements: ../requirements/product-spec.md.
+
+| Level | Location | Focus |
+|---|---|---|
+| Domain tests | src/packages/earnings_core/test | Common/leap years, annual/monthly basis, lunch, overnight, make-up work, version splitting, precision, zero denominator |
+| Application tests | src/apps/pay_by_second/test | Orchestration, failed saves, invalidation, one-now snapshots, pause/recovery |
+| Widget tests | App test/, grouped by feature | Validation, money/privacy/errors/period switching |
+| Adapters | App tests/platform integration | Web/native storage, migration/corruption/credential boundaries |
+| End-to-end | integration_test/ and browser tooling | Setup → dashboard → close → restore; real-auth success/failure when implemented |
+| Resources/permissions | Real Android Release device | 1 s/100 ms, stable heap, route round trips, background work, merged manifest |
+
+Identical time/rules must produce identical money; tick count must not matter; resume must not replay old ticks. Missing calendar coverage is explicit. Routes must not leak timers/subscriptions.
+
+Validate schema, dates, calendar sources/coverage and mutually exclusive fields. Static checks prevent core dependence on Flutter/platform APIs. Implement critical executable tests; the plan itself is not evidence.
+
+Before Web publication run domain/app tests, analysis and Release build. Android additionally needs real-device flows, resource measurement and permission review. Archive reports under out/reports/ with version/device/build mode, using synthetic finance data and no private machine paths in public summaries.
+
+## 中文
 
 状态：完整产品验证计划；部分已在 Web MVP 实现并验证，结果见 [首版验证记录](web-mvp-validation.md)。尚未实现的完整产品能力不视为通过。需求明细见 ../requirements/product-spec.md。
 

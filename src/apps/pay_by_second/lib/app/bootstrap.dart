@@ -4,9 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../infrastructure/settings_repository.dart';
+import '../infrastructure/overtime_repository.dart';
 import '../infrastructure/system_clock.dart';
 import '../infrastructure/language_repository.dart';
 import 'app.dart';
+import '../infrastructure/create_updater.dart';
 
 void bootstrap() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +24,8 @@ void bootstrap() {
     PayBySecondApp(
       repository: LocalSettingsRepository(SharedPreferencesAsync()),
       clock: SystemClock(),
+      updates: createUpdater(),
+      overtimeRepository: LocalOvertimeRepository(SharedPreferencesAsync()),
       languageRepository: LocalLanguageRepository(SharedPreferencesAsync()),
     ),
   );

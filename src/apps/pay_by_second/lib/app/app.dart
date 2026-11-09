@@ -1,3 +1,7 @@
+import '../application/app_updates.dart';
+import '../features/updates/presentation/updates_page.dart';
+import '../application/overtime.dart';
+import '../features/overtime/presentation/overtime_pages.dart';
 import 'package:flutter/material.dart';
 import '../application/income_session.dart';
 import '../application/language_repository.dart';
@@ -15,10 +19,14 @@ class PayBySecondApp extends StatefulWidget {
     required this.repository,
     required this.clock,
     this.languageRepository,
+    this.overtimeRepository,
+    this.updates,
   });
   final SettingsRepository repository;
   final Clock clock;
   final LanguageRepository? languageRepository;
+  final OvertimeRepository? overtimeRepository;
+  final UpdateController? updates;
   @override
   State<PayBySecondApp> createState() => _PayBySecondAppState();
 }
@@ -31,7 +39,14 @@ class _PayBySecondAppState extends State<PayBySecondApp> {
   void initState() {
     super.initState();
     _languages = widget.languageRepository ?? MemoryLanguageRepository();
+    widget.updates?.initialize();
     _loadLanguage();
+  }
+
+  @override
+  void dispose() {
+    widget.updates?.dispose();
+    super.dispose();
   }
 
   Future<void> _loadLanguage() async {
@@ -105,6 +120,8 @@ class _PayBySecondAppState extends State<PayBySecondApp> {
     home: _loading
         ? const Scaffold(body: Center(child: CircularProgressIndicator()))
         : _Home(
+            overtimeRepository: widget.overtimeRepository,
+            updates: widget.updates,
             repository: widget.repository,
             clock: widget.clock,
             onLanguageChanged: _changeLanguage,
@@ -117,10 +134,14 @@ class _Home extends StatefulWidget {
   const _Home({
     required this.repository,
     required this.clock,
+    this.overtimeRepository,
+    this.updates,
     required this.onLanguageChanged,
     required this.languageLoadFailed,
   });
   final SettingsRepository repository;
+  final OvertimeRepository? overtimeRepository;
+  final UpdateController? updates;
   final Clock clock;
   final Future<void> Function(String) onLanguageChanged;
   final bool languageLoadFailed;
@@ -130,11 +151,55 @@ class _Home extends StatefulWidget {
 
 class _HomeState extends State<_Home> {
   Settings? _settings;
+  late final OvertimeController _overtime;
   bool _loading = true, _away = false, _loadFailed = false;
   @override
   void initState() {
     super.initState();
+    _overtime = OvertimeController(
+      widget.overtimeRepository ?? MemoryOvertimeRepository(),
+    );
+    _overtime.addListener(_overtimeChanged);
+    _overtime.load();
     _load();
+  }
+
+  void _overtimeChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _overtime.removeListener(_overtimeChanged);
+    _overtime.dispose();
+    super.dispose();
+  }
+
+  Future<void> _toggleOvertime() async {
+    if (_overtime.busy || _overtime.failed || _overtime.loading) return;
+    if (_overtime.book.active == null && _overtime.book.policy == null) {
+      await _navigate(
+        OvertimeSettingsPage(
+          controller: _overtime,
+          monthlyMinor: _settings!.toPolicy().monthlyMinor,
+          startAt: widget.clock.now,
+        ),
+      );
+      return;
+    }
+    try {
+      await _overtime.change(
+        (book) => book.active == null
+            ? book.start(widget.clock.now())
+            : book.stop(widget.clock.now()),
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l.otSaveError)));
+      }
+    }
   }
 
   Future<void> _load() async {
@@ -176,16 +241,23 @@ class _HomeState extends State<_Home> {
     if (mounted) setState(() => _away = false);
   }
 
+  void _updatesPage() => _navigate(UpdatesPage(controller: widget.updates!));
   void _setup() =>
       _navigate(ConfigurationEditor(now: widget.clock.now(), onSave: _save));
   void _settingsPage() => _navigate(
     SettingsHub(
       settings: _settings!,
+      updates: widget.updates,
       now: widget.clock.now(),
       onSave: _save,
       onLanguageChanged: widget.onLanguageChanged,
       languageLoadFailed: widget.languageLoadFailed,
       onClear: () async {
+        if (_overtime.busy || _overtime.loading) {
+          throw StateError('Operation in progress');
+        }
+        await _overtime.repository.save(OvertimeBook());
+        await _overtime.load();
         await widget.repository.clear();
         if (mounted) setState(() => _settings = null);
       },
@@ -201,9 +273,14 @@ class _HomeState extends State<_Home> {
           children: [
             Icon(Icons.timelapse_rounded, color: accent),
             SizedBox(width: 10),
-            Text(
-              'PayBySecond',
-              style: TextStyle(fontSize: 21, fontWeight: FontWeight.w700),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  'PayBySecond',
+                  style: TextStyle(fontSize: 21, fontWeight: FontWeight.w700),
+                ),
+              ),
             ),
           ],
         ),
@@ -229,6 +306,13 @@ class _HomeState extends State<_Home> {
                     ),
               icon: const Icon(Icons.translate),
             ),
+          if (_settings == null && widget.updates != null)
+            IconButton(
+              key: const Key('open-updates'),
+              tooltip: l.softwareUpdate,
+              onPressed: _away ? null : _updatesPage,
+              icon: const Icon(Icons.system_update_alt),
+            ),
           const SizedBox(width: 12),
         ],
       ),
@@ -238,6 +322,34 @@ class _HomeState extends State<_Home> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 12),
+            if (widget.updates != null)
+              AnimatedBuilder(
+                animation: widget.updates!,
+                builder: (context, _) {
+                  if (!widget.updates!.available) {
+                    return const SizedBox.shrink();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Surface(
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(
+                          Icons.system_update_alt,
+                          color: accent,
+                        ),
+                        title: Text(
+                          l.updateFound(
+                            widget.updates!.latest!.version.toString(),
+                          ),
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: _away ? null : _updatesPage,
+                      ),
+                    ),
+                  );
+                },
+              ),
             Text(
               l.headline,
               style: const TextStyle(
@@ -300,6 +412,23 @@ class _HomeState extends State<_Home> {
                 settings: _settings!,
                 clock: widget.clock,
                 enabled: !_away,
+                overtimeActive: _overtime.book.active != null,
+                overtimeBuilder: (now, hidden) => Padding(
+                  padding: const EdgeInsets.only(top: 24),
+                  child: OvertimeCard(
+                    controller: _overtime,
+                    now: now,
+                    hidden: hidden,
+                    onToggle: _toggleOvertime,
+                    onDetails: () => _navigate(
+                      OvertimeDetailsPage(
+                        controller: _overtime,
+                        clock: widget.clock,
+                        monthlyMinor: _settings!.toPolicy().monthlyMinor,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             const SizedBox(height: 24),
             Row(

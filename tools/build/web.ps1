@@ -1,5 +1,6 @@
 param([string]$FlutterRoot)
 . (Join-Path $PSScriptRoot '../common.ps1')
+& (Join-Path $ProjectRoot 'tools/build/update-config.ps1')
 $flutter = Find-Flutter $FlutterRoot
 Push-Location (Join-Path $ProjectRoot 'src/apps/pay_by_second')
 try {

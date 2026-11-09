@@ -20,10 +20,14 @@ class Dashboard extends StatefulWidget {
     required this.settings,
     required this.clock,
     required this.enabled,
+    this.overtimeActive = false,
+    this.overtimeBuilder,
   });
   final Settings settings;
   final Clock clock;
   final bool enabled;
+  final bool overtimeActive;
+  final Widget Function(DateTime, bool)? overtimeBuilder;
   @override
   State<Dashboard> createState() => _DashboardState();
 }
@@ -52,7 +56,8 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
     _timer = null;
     if (!_active) return;
     final snap = _snapshot.value;
-    final waiting = snap.rate.numerator == BigInt.zero;
+    final waiting =
+        snap.rate.numerator == BigInt.zero && !widget.overtimeActive;
     final ms = waiting
         ? 60000 - (snap.now.second * 1000 + snap.now.millisecond)
         : widget.settings.refreshMs;
@@ -289,6 +294,14 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
             ],
           ),
         ),
+        if (widget.overtimeBuilder != null)
+          ValueListenableBuilder<EarningsSnapshot>(
+            valueListenable: _snapshot,
+            builder: (_, snap, _) => widget.overtimeBuilder!(
+              snap.now.subtract(const Duration(hours: 8)),
+              _hidden,
+            ),
+          ),
       ],
     );
   }
