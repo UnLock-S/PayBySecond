@@ -2,6 +2,8 @@
 
 ## English
 
+**Android test APK:** [Download v0.2.1](https://github.com/UnLock-S/PayBySecond/releases/download/v0.2.1/PayBySecond-0.2.1-arm64-v8a-test.apk) · [Release notes and SHA256](https://github.com/UnLock-S/PayBySecond/releases/tag/v0.2.1). Android 7.0+, ARM64; Release-optimized with the existing Debug test certificate. Older local versions without an updater need this version installed manually once.
+
 PayBySecond is a live income estimator: validate on Flutter Web first, deliver Android APK from the same client, then extend to Windows/Linux/macOS.
 
 Repository: [UnLock-S/PayBySecond](https://github.com/UnLock-S/PayBySecond). Development continues directly on main. Project-owned code has no selected overall license; public visibility does not change third-party terms or assign an MIT/Apache license.
@@ -75,6 +77,8 @@ Configure owner/repository in config/app/updates.json. A public repository still
 Do not create placeholder files for every planned empty directory. Prefer built-ins/official plugins and permissive licensing; no paid-contract, noncommercial-only or unknown components. Preserve copyright/licenses/NOTICES, including the in-app license page. Upstream legal texts remain verbatim; project documents are English/Chinese. Historical author metadata is retained with the owner's explicit consent; new commits use a public noreply identity.
 
 ## 中文
+
+**Android测试包：**[下载v0.2.1](https://github.com/UnLock-S/PayBySecond/releases/download/v0.2.1/PayBySecond-0.2.1-arm64-v8a-test.apk) · [更新说明与SHA256](https://github.com/UnLock-S/PayBySecond/releases/tag/v0.2.1)。适用于Android 7.0+、ARM64，Release优化并沿用Debug测试证书。旧版若没有更新入口，需先手动安装本版一次。
 
 实时工资估算工具，Flutter Web 优先验证，后续交付 Android APK，再扩展 Windows、Linux、macOS。
 
