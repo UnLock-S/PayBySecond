@@ -1,0 +1,5 @@
+analyzer:
+  exclude:
+    - build/**
+    - web/**
+include: ../../../config/quality/analysis_options.yaml

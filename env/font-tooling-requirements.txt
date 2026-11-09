@@ -1,0 +1,2 @@
+# Only needed to regenerate the committed local font subsets.
+fonttools==4.67.0

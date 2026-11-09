@@ -1,0 +1,29 @@
+name: pay_by_second
+description: A quiet, local-first live income estimator.
+publish_to: none
+version: 0.1.0+1
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  earnings_core:
+    path: ../../packages/earnings_core
+  shared_preferences: ^2.5.3
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: PayBySecondSC
+      fonts:
+        - asset: assets/fonts/PayBySecondSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/PayBySecondSans-Bold.ttf
+          weight: 700
+  assets:
+    - assets/fonts/OFL.txt

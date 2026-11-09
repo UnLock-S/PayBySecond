@@ -1,0 +1,8 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.ico binary
+*.woff2 binary
+*.ttf binary
+# Keep the upstream license verbatim, including its original whitespace.
+src/apps/pay_by_second/assets/fonts/OFL.txt -text -whitespace

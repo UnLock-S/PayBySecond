@@ -16,7 +16,7 @@
 **/.dart_tool/
 **/.pub/
 **/.pub-cache/
-**/build/
+/src/**/build/
 **/.flutter-plugins
 **/.flutter-plugins-dependencies
 **/coverage/

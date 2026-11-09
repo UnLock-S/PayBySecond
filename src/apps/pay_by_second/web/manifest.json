@@ -1,0 +1,11 @@
+{
+  "name": "PayBySecond · 每秒有所得",
+  "short_name": "PayBySecond",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#F6F7F2",
+  "theme_color": "#162F36",
+  "description": "实时查看按薪资与排班估算的收入。",
+  "prefer_related_applications": false,
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
