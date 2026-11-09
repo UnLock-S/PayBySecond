@@ -1,63 +1,136 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-
 import '../application/income_session.dart';
+import '../application/language_repository.dart';
 import '../application/settings.dart';
+import '../infrastructure/document_language_stub.dart'
+    if (dart.library.js_interop) '../infrastructure/document_language_web.dart';
 import '../features/dashboard/presentation/dashboard.dart';
-import '../features/profile/presentation/profile_editor.dart';
+import '../features/settings/presentation/configuration_editor.dart';
+import '../features/settings/presentation/settings_hub.dart';
+import '../shared/presentation/design.dart';
 
-const ink = Color(0xFF162D35);
-const accent = Color(0xFF147B66);
-
-class PayBySecondApp extends StatelessWidget {
+class PayBySecondApp extends StatefulWidget {
   const PayBySecondApp({
     super.key,
     required this.repository,
     required this.clock,
+    this.languageRepository,
   });
   final SettingsRepository repository;
   final Clock clock;
+  final LanguageRepository? languageRepository;
+  @override
+  State<PayBySecondApp> createState() => _PayBySecondAppState();
+}
+
+class _PayBySecondAppState extends State<PayBySecondApp> {
+  late final LanguageRepository _languages;
+  String _language = 'zh';
+  bool _loading = true, _languageLoadFailed = false;
+  @override
+  void initState() {
+    super.initState();
+    _languages = widget.languageRepository ?? MemoryLanguageRepository();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    try {
+      final value = await _languages.load();
+      if (!mounted) return;
+      if (value != null && ['zh', 'en', 'ja'].contains(value)) {
+        _language = value;
+      } else if (value != null) {
+        _languageLoadFailed = true;
+      }
+    } catch (_) {
+      _languageLoadFailed = true;
+    }
+    if (mounted) {
+      setDocumentLanguage(_language);
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _changeLanguage(String language) async {
+    if (!['zh', 'en', 'ja'].contains(language)) {
+      throw ArgumentError('Unsupported locale');
+    }
+    await _languages.save(language);
+    setDocumentLanguage(language);
+    if (mounted) {
+      setState(() {
+        _language = language;
+        _languageLoadFailed = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) => MaterialApp(
-    title: 'PayBySecond · 每秒有所得',
+    title: 'PayBySecond',
     debugShowCheckedModeBanner: false,
-    locale: const Locale('zh', 'CN'),
-    supportedLocales: const [Locale('zh', 'CN')],
-    localizationsDelegates: GlobalMaterialLocalizations.delegates,
+    locale: Locale(_language),
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: ThemeData(
-      fontFamily: 'PayBySecondSC',
       useMaterial3: true,
-      scaffoldBackgroundColor: const Color(0xFFF6F7F2),
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: accent,
-        brightness: Brightness.light,
+      fontFamily: _language == 'ja' ? 'PayBySecondJP' : 'PayBySecondSC',
+      fontFamilyFallback: const ['PayBySecondSC'],
+      scaffoldBackgroundColor: const Color(0xFFF5F7F3),
+      colorScheme: ColorScheme.fromSeed(seedColor: accent),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFFF5F7F3),
+        foregroundColor: ink,
+        centerTitle: false,
+        scrolledUnderElevation: 0,
       ),
-      inputDecorationTheme: const InputDecorationTheme(
-        border: OutlineInputBorder(),
+      inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+        contentPadding: const EdgeInsets.all(18),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(0, 48),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        ),
       ),
       textTheme: const TextTheme(
-        headlineLarge: TextStyle(color: ink, fontWeight: FontWeight.w700),
-        bodyMedium: TextStyle(color: ink),
+        bodyMedium: TextStyle(color: ink, height: 1.6),
+        titleLarge: TextStyle(color: ink, fontWeight: FontWeight.w600),
       ),
     ),
-    home: _Home(repository: repository, clock: clock),
+    home: _loading
+        ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+        : _Home(
+            repository: widget.repository,
+            clock: widget.clock,
+            onLanguageChanged: _changeLanguage,
+            languageLoadFailed: _languageLoadFailed,
+          ),
   );
 }
 
 class _Home extends StatefulWidget {
-  const _Home({required this.repository, required this.clock});
+  const _Home({
+    required this.repository,
+    required this.clock,
+    required this.onLanguageChanged,
+    required this.languageLoadFailed,
+  });
   final SettingsRepository repository;
   final Clock clock;
+  final Future<void> Function(String) onLanguageChanged;
+  final bool languageLoadFailed;
   @override
   State<_Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<_Home> {
   Settings? _settings;
-  bool _loading = true, _editing = false;
-  String? _error;
+  bool _loading = true, _away = false, _loadFailed = false;
   @override
   void initState() {
     super.initState();
@@ -66,224 +139,185 @@ class _HomeState extends State<_Home> {
 
   Future<void> _load() async {
     try {
-      final settings = await widget.repository.load();
+      final s = await widget.repository.load();
       if (mounted) {
         setState(() {
-          _settings = settings;
+          _settings = s;
           _loading = false;
-          _error = null;
+          _loadFailed = false;
         });
       }
     } catch (_) {
       if (mounted) {
         setState(() {
           _loading = false;
-          _error = '本机配置暂时无法读取。原数据已保留，你可以重试，或重新设置并覆盖。';
+          _loadFailed = true;
         });
       }
     }
   }
 
-  Future<void> _edit() async {
-    setState(() => _editing = true);
-    await showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => ProfileEditor(
-        initial: _settings,
-        now: widget.clock.now(),
-        onSave: (settings) async {
-          await widget.repository.save(settings);
-          if (mounted) {
-            setState(() {
-              _settings = settings;
-              _error = null;
-            });
-          }
-        },
-      ),
-    );
-    if (mounted) setState(() => _editing = false);
-  }
-
-  Future<void> _clear() async {
-    final yes = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('清空本机数据？'),
-        content: const Text('将删除此浏览器/设备保存的薪资和排班，无法撤销。'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('清空'),
-          ),
-        ],
-      ),
-    );
-    if (yes != true) return;
-    try {
-      await widget.repository.clear();
-      if (mounted) setState(() => _settings = null);
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('清空失败，原数据保留，请重试。')));
-      }
+  Future<void> _save(Settings s) async {
+    await widget.repository.save(s);
+    if (mounted) {
+      setState(() {
+        _settings = s;
+        _loadFailed = false;
+      });
     }
   }
 
-  Future<void> _licenses() async {
-    setState(() => _editing = true);
-    await Navigator.of(context).push<void>(
-      MaterialPageRoute<void>(
-        builder: (_) => const LicensePage(applicationName: 'PayBySecond'),
-      ),
-    );
-    if (mounted) setState(() => _editing = false);
+  Future<void> _navigate(Widget page) async {
+    if (_away) return;
+    setState(() => _away = true);
+    await Navigator.of(
+      context,
+    ).push<void>(MaterialPageRoute(builder: (_) => page));
+    if (mounted) setState(() => _away = false);
   }
 
+  void _setup() =>
+      _navigate(ConfigurationEditor(now: widget.clock.now(), onSave: _save));
+  void _settingsPage() => _navigate(
+    SettingsHub(
+      settings: _settings!,
+      now: widget.clock.now(),
+      onSave: _save,
+      onLanguageChanged: widget.onLanguageChanged,
+      languageLoadFailed: widget.languageLoadFailed,
+      onClear: () async {
+        await widget.repository.clear();
+        if (mounted) setState(() => _settings = null);
+      },
+    ),
+  );
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1120),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 24,
-                  runSpacing: 12,
-                  children: [
-                    const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.timelapse_rounded, color: accent, size: 32),
-                        SizedBox(width: 10),
-                        Text(
-                          'PayBySecond',
-                          style: TextStyle(
-                            fontSize: 23,
-                            fontWeight: FontWeight.w800,
-                            color: ink,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Chip(
-                      label: Text('本机体验版 · 无需账号'),
-                      avatar: Icon(Icons.shield_outlined, size: 18),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 42),
-                const Text(
-                  '每一秒，都有所得。',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700,
-                    color: ink,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  '把工作的时间，换成看得见的积累。',
-                  style: TextStyle(color: Color(0xFF687A7C), fontSize: 16),
-                ),
-                const SizedBox(height: 28),
-                if (_error != null)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(_error!),
-                          TextButton(
-                            onPressed: _load,
-                            child: const Text('重试读取'),
-                          ),
-                        ],
+  Widget build(BuildContext context) {
+    final l = context.l;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.timelapse_rounded, color: accent),
+            SizedBox(width: 10),
+            Text(
+              'PayBySecond',
+              style: TextStyle(fontSize: 21, fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
+        actions: [
+          if (_settings != null)
+            IconButton(
+              key: const Key('open-settings'),
+              tooltip: l.settings,
+              onPressed: _away ? null : _settingsPage,
+              icon: const Icon(Icons.tune_rounded),
+            )
+          else
+            IconButton(
+              key: const Key('open-language'),
+              tooltip: l.languageSection,
+              onPressed: _away
+                  ? null
+                  : () => _navigate(
+                      LanguagePage(
+                        onChanged: widget.onLanguageChanged,
+                        loadFailed: widget.languageLoadFailed,
                       ),
                     ),
-                  ),
-                if (_loading)
-                  const Center(child: CircularProgressIndicator())
-                else if (_settings == null)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.savings_outlined,
-                          size: 44,
-                          color: accent,
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          '从你的第一笔设置开始',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: ink,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          '填写月薪、入职日期和工作时间，即可看到实时估算。\n数据仅保存于此设备，关闭页面后无需后台运行。',
-                        ),
-                        const SizedBox(height: 24),
-                        FilledButton.icon(
-                          onPressed: _editing ? null : _edit,
-                          icon: const Icon(Icons.arrow_forward),
-                          label: const Text('设置我的薪资'),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  Dashboard(
-                    key: ObjectKey(_settings),
-                    settings: _settings!,
-                    clock: widget.clock,
-                    enabled: !_editing,
-                    onEdit: _edit,
-                    onClear: _clear,
-                  ),
-                const SizedBox(height: 28),
-                const Text(
-                  '预计收入 ≠ 实际到账。当前为人民币、UTC+08:00 固定时区；账号、自动法定日历与薪资历史尚未接入。',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF687A7C)),
+              icon: const Icon(Icons.translate),
+            ),
+          const SizedBox(width: 12),
+        ],
+      ),
+      body: PageBody(
+        width: 1000,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 12),
+            Text(
+              l.headline,
+              style: const TextStyle(
+                fontSize: 30,
+                height: 1.25,
+                fontWeight: FontWeight.w700,
+                color: ink,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              l.subtitle,
+              style: const TextStyle(fontSize: 15, color: muted),
+            ),
+            const SizedBox(height: 32),
+            if (_loadFailed) ...[
+              Surface(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l.loadError),
+                    TextButton(onPressed: _load, child: Text(l.retry)),
+                  ],
                 ),
-                TextButton(
-                  onPressed: _editing ? null : _licenses,
-                  child: const Text('开源许可'),
+              ),
+              const SizedBox(height: 20),
+            ],
+            if (_loading)
+              const Center(child: CircularProgressIndicator())
+            else if (_settings == null)
+              Surface(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 12),
+                    const Icon(Icons.savings_outlined, size: 44, color: accent),
+                    const SizedBox(height: 28),
+                    Text(
+                      l.welcomeTitle,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(l.welcomeBody, style: const TextStyle(color: muted)),
+                    const SizedBox(height: 28),
+                    FilledButton.icon(
+                      key: const Key('get-started'),
+                      onPressed: _away ? null : _setup,
+                      icon: const Icon(Icons.arrow_forward),
+                      label: Text(l.getStarted),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  '薪资保存在本机，未加密。浏览器清理数据后会丢失，请勿将本页作为唯一记录。',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF687A7C)),
+              )
+            else
+              Dashboard(
+                settings: _settings!,
+                clock: widget.clock,
+                enabled: !_away,
+              ),
+            const SizedBox(height: 24),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.shield_outlined, color: muted, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${l.localOnly} · ${l.estimateNote}',
+                    style: const TextStyle(color: muted, fontSize: 12),
+                  ),
                 ),
               ],
             ),
-          ),
+          ],
         ),
       ),
-    ),
-  );
+    );
+  }
 }

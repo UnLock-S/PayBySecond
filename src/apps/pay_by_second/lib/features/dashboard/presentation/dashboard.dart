@@ -1,18 +1,17 @@
 import 'dart:async';
-
 import 'package:earnings_core/earnings_core.dart';
 import 'package:flutter/material.dart';
-
 import '../../../application/income_session.dart';
 import '../../../application/settings.dart';
+import '../../../shared/presentation/design.dart';
 
-const _labels = {
-  Period.employment: '入职以来',
-  Period.year: '本年',
-  Period.month: '本月',
-  Period.week: '本周',
-  Period.day: '本日',
-  Period.hour: '本小时',
+String periodLabel(Period period, AppLocalizations l) => switch (period) {
+  Period.employment => l.employment,
+  Period.year => l.year,
+  Period.month => l.month,
+  Period.week => l.week,
+  Period.day => l.day,
+  Period.hour => l.hour,
 };
 
 class Dashboard extends StatefulWidget {
@@ -21,19 +20,16 @@ class Dashboard extends StatefulWidget {
     required this.settings,
     required this.clock,
     required this.enabled,
-    required this.onEdit,
-    required this.onClear,
   });
   final Settings settings;
   final Clock clock;
   final bool enabled;
-  final VoidCallback onEdit, onClear;
   @override
   State<Dashboard> createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
-  late final IncomeSession _session;
+  late IncomeSession _session;
   late final ValueNotifier<EarningsSnapshot> _snapshot;
   Timer? _timer;
   Period _period = Period.day;
@@ -56,9 +52,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
     _timer = null;
     if (!_active) return;
     final snap = _snapshot.value;
-    final waiting =
-        widget.settings.mode == AccrualMode.work &&
-        snap.rate.numerator == BigInt.zero;
+    final waiting = snap.rate.numerator == BigInt.zero;
     final ms = waiting
         ? 60000 - (snap.now.second * 1000 + snap.now.millisecond)
         : widget.settings.refreshMs;
@@ -78,7 +72,10 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   @override
   void didUpdateWidget(covariant Dashboard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.enabled && !oldWidget.enabled) {
+    if (oldWidget.settings != widget.settings) {
+      _session = IncomeSession(widget.settings, widget.clock);
+      _snapshot.value = _session.snapshot();
+    } else if (widget.enabled && !oldWidget.enabled) {
       _snapshot.value = _session.snapshot();
     }
     _schedule();
@@ -93,214 +90,224 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          for (final p in Period.values)
-            ChoiceChip(
-              label: Text(_labels[p]!),
-              selected: _period == p,
-              onSelected: (_) => setState(() => _period = p),
-            ),
-        ],
-      ),
-      const SizedBox(height: 16),
-      ValueListenableBuilder<EarningsSnapshot>(
-        valueListenable: _snapshot,
-        builder: (context, snap, child) {
-          final working = snap.rate.numerator > BigInt.zero;
-          final future = snap.now.isBefore(widget.settings.start);
-          String amount(Period p) => _hidden
-              ? '••••••'
-              : snap.amounts[p]!.format(widget.settings.digits);
-          return Column(
+  Widget build(BuildContext context) {
+    final l = context.l;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF162F36),
+            borderRadius: BorderRadius.circular(28),
+          ),
+          padding: const EdgeInsets.all(26),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF162F36),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<Period>(
+                        key: const Key('period-selector'),
+                        isExpanded: true,
+                        value: _period,
+                        dropdownColor: const Color(0xFF203F45),
+                        iconEnabledColor: Colors.white70,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge!.copyWith(color: Colors.white),
+                        items: [
+                          for (final p in Period.values)
+                            DropdownMenuItem(
+                              value: p,
+                              child: Text(periodLabel(p, l)),
+                            ),
+                        ],
+                        onChanged: (v) => setState(() => _period = v!),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Semantics(
+                    key: const Key('amount-visibility'),
+                    child: IconButton(
+                      key: ValueKey(_hidden),
+                      tooltip: _hidden ? l.showAmount : l.hideAmount,
+                      onPressed: () => setState(() => _hidden = !_hidden),
+                      icon: Icon(
+                        _hidden
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                '${l.earned} · CNY',
+                style: const TextStyle(color: Color(0xFFB7CECA), fontSize: 13),
+              ),
+              const SizedBox(height: 12),
+              ValueListenableBuilder<EarningsSnapshot>(
+                valueListenable: _snapshot,
+                builder: (context, snap, _) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${_labels[_period]}已赚 · CNY',
-                            style: const TextStyle(
-                              color: Color(0xFFB4C9C7),
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          tooltip: _hidden ? '显示金额' : '隐藏金额',
-                          onPressed: () => setState(() => _hidden = !_hidden),
-                          icon: Icon(
-                            _hidden
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
                     SizedBox(
-                      height: 76,
+                      height: 86,
+                      width: double.infinity,
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          '¥ ${amount(_period)}',
+                          _hidden
+                              ? '••••••'
+                              : 'CN¥ ${grouped(snap.amounts[_period]!.format(widget.settings.digits))}',
+                          key: const Key('main-amount'),
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 58,
+                            fontSize: 64,
+                            height: 1.1,
                             fontWeight: FontWeight.w600,
                             fontFeatures: [FontFeature.tabularFigures()],
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 22),
-                    Wrap(
-                      spacing: 20,
-                      runSpacing: 8,
+                    const SizedBox(height: 24),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          future
-                              ? '○ 尚未入职'
-                              : working
-                              ? '● 正在累计'
-                              : '○ 休息时间，金额暂停',
-                          style: const TextStyle(color: Color(0xFF9CE6C5)),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 5),
+                          child: Icon(
+                            Icons.circle,
+                            color: Color(0xFF9CE6C5),
+                            size: 8,
+                          ),
                         ),
-                        Text(
-                          '当前速率  ${_hidden ? '••••' : snap.rate.format(6)} 元/秒',
-                          style: const TextStyle(color: Colors.white70),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            snap.now.isBefore(widget.settings.start)
+                                ? l.notStarted
+                                : _session.engine.policy.monthlyMinor ==
+                                      BigInt.zero
+                                ? l.zeroSalary
+                                : snap.rate.numerator > BigInt.zero
+                                ? l.accruing
+                                : l.resting,
+                            style: const TextStyle(color: Color(0xFF9CE6C5)),
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      '当前速率  ${_hidden ? '••••' : snap.rate.scale(60).format(4)} 元/分钟',
-                      style: const TextStyle(color: Colors.white70),
+                    const SizedBox(height: 24),
+                    const Divider(color: Color(0xFF375156)),
+                    const SizedBox(height: 16),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _rate(
+                            l.perSecond,
+                            _hidden ? '••••' : snap.rate.format(6),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _rate(
+                            l.perMinute,
+                            _hidden ? '••••' : snap.rate.scale(60).format(4),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 20),
                     Text(
-                      '计算至 ${snap.now.toIso8601String().substring(0, 19).replaceFirst('T', ' ')} · UTC+08:00',
+                      l.updatedAt(
+                        snap.now
+                            .toIso8601String()
+                            .substring(0, 19)
+                            .replaceFirst('T', ' '),
+                      ),
                       style: const TextStyle(
                         color: Colors.white54,
-                        fontSize: 12,
+                        fontSize: 11,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final width = constraints.maxWidth > 700
-                      ? (constraints.maxWidth - 32) / 3
-                      : constraints.maxWidth;
-                  return Wrap(
-                    spacing: 16,
-                    runSpacing: 16,
-                    children: [
-                      for (final p in [
-                        Period.year,
-                        Period.month,
-                        Period.employment,
-                      ])
-                        SizedBox(
-                          width: width,
-                          child: Card(
-                            elevation: 0,
-                            color: Colors.white,
-                            margin: EdgeInsets.zero,
-                            child: Padding(
-                              padding: const EdgeInsets.all(22),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _labels[p]!,
-                                    style: const TextStyle(
-                                      color: Color(0xFF687A7C),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        ValueListenableBuilder<EarningsSnapshot>(
+          valueListenable: _snapshot,
+          builder: (context, snap, _) => Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final p in [Period.month, Period.employment]) ...[
+                if (p == Period.employment) const SizedBox(width: 14),
+                Expanded(
+                  child: Surface(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          periodLabel(p, l),
+                          style: const TextStyle(color: muted),
+                        ),
+                        const SizedBox(height: 14),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            _hidden
+                                ? '••••••'
+                                : grouped(
+                                    snap.amounts[p]!.format(
+                                      widget.settings.digits,
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
-                                  FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      '¥ ${amount(p)}',
-                                      style: const TextStyle(
-                                        fontSize: 23,
-                                        fontWeight: FontWeight.w600,
-                                        fontFeatures: [
-                                          FontFeature.tabularFigures(),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                              fontFeatures: [FontFeature.tabularFigures()],
                             ),
                           ),
                         ),
-                    ],
-                  );
-                },
-              ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ],
-          );
-        },
-      ),
-      const SizedBox(height: 22),
-      Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        children: [
-          Chip(
-            label: Text(
-              widget.settings.basis == SalaryBasis.annual ? '按年均摊' : '按月均摊',
-            ),
-          ),
-          Chip(
-            label: Text(
-              widget.settings.mode == AccrualMode.calendar ? '全天累计' : '仅工作时段',
-            ),
-          ),
-          Chip(label: Text('${widget.settings.refreshMs}ms 刷新')),
-        ],
-      ),
-      if (widget.settings.mode == AccrualMode.work)
-        const Padding(
-          padding: EdgeInsets.only(top: 8),
-          child: Text(
-            '日历口径：每周排班 + 手动日期例外；尚未加载官方节假日和调休。',
-            style: TextStyle(color: Color(0xFF846331)),
           ),
         ),
-      const SizedBox(height: 18),
-      Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        children: [
-          OutlinedButton.icon(
-            onPressed: widget.onEdit,
-            icon: const Icon(Icons.tune),
-            label: const Text('调整估算配置'),
+      ],
+    );
+  }
+
+  Widget _rate(String label, String amount) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(label, style: const TextStyle(color: Colors.white60, fontSize: 12)),
+      const SizedBox(height: 6),
+      FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          amount,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontFeatures: [FontFeature.tabularFigures()],
           ),
-          TextButton(onPressed: widget.onClear, child: const Text('清空本机数据')),
-        ],
+        ),
       ),
     ],
   );

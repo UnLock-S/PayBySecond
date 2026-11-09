@@ -195,3 +195,5 @@ CI 平台要求的入口文件，例如未来的 .github/workflows 或 .gitlab-c
 当前已落地 Web 客户端、纯 Dart 计算包、测试、运行/构建脚本与 Web 平台工程。真实认证、官方日历包、历史版本和其余原生平台尚未实现，具体首版边界见 ADR-002。
 
 目标架构与 MVP 的简化须区分：当前启动页承担配置读取/保存编排，DashboardState 持有可见性监听和单个刷新 Timer，尚未提取独立的配置 UseCase、VisibilitySource 或 RefreshCoordinator。工资算法与配置模型已独立，存储通过 Repository 注入；引入账号和历史版本时按本设计继续拆分，不把当前实现描述为所有目标模块均已完成。
+
+UI已由单个profile配置弹窗调整为features/settings中的分类页面与首次分步流程，新增独立语言偏好Repository和Flutter内置本地化。当前页面职责以 [多页面与三语设计](../design/ui-navigation.md) 为准；领域计算层和薪资存储schema不变。

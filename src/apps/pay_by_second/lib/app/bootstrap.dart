@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../infrastructure/settings_repository.dart';
 import '../infrastructure/system_clock.dart';
+import '../infrastructure/language_repository.dart';
 import 'app.dart';
 
 void bootstrap() {
@@ -13,11 +14,15 @@ void bootstrap() {
     yield LicenseEntryWithLineBreaks([
       'PayBySecond Sans (Noto Sans SC subset)',
     ], await rootBundle.loadString('assets/fonts/OFL.txt'));
+    yield LicenseEntryWithLineBreaks([
+      'PayBySecond Sans JP (Noto Sans JP subset)',
+    ], await rootBundle.loadString('assets/fonts/OFL-JP.txt'));
   });
   runApp(
     PayBySecondApp(
       repository: LocalSettingsRepository(SharedPreferencesAsync()),
       clock: SystemClock(),
+      languageRepository: LocalLanguageRepository(SharedPreferencesAsync()),
     ),
   );
 }

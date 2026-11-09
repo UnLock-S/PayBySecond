@@ -12,13 +12,22 @@ dependencies:
   earnings_core:
     path: ../../packages/earnings_core
   shared_preferences: ^2.5.3
+  intl: ^0.20.3
+  web: ^1.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
 flutter:
+  generate: true
   uses-material-design: true
   fonts:
+    - family: PayBySecondJP
+      fonts:
+        - asset: assets/fonts/PayBySecondSansJP-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/PayBySecondSansJP-Bold.ttf
+          weight: 700
     - family: PayBySecondSC
       fonts:
         - asset: assets/fonts/PayBySecondSans-Regular.ttf
@@ -27,3 +36,4 @@ flutter:
           weight: 700
   assets:
     - assets/fonts/OFL.txt
+    - assets/fonts/OFL-JP.txt

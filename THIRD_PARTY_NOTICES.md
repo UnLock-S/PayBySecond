@@ -8,7 +8,7 @@
 |---|---|---|
 | Flutter / Dart | 客户端与计算运行环境 | 框架顶层 BSD-3-Clause；引擎有多项独立第三方许可，保留生成的 NOTICES |
 | shared_preferences | 本机配置存储 | 锁定包顶层 BSD-3-Clause；其平台包一并纳入清单 |
-| Noto Sans SC 派生子集 | 本地中文字体 | SIL OFL-1.1，改名 PayBySecond Sans，保留原版权与 OFL 正文 |
+| Noto Sans SC / JP 派生子集 | 本地中文、日文字体 | SIL OFL-1.1，改名 PayBySecond Sans / PayBySecond Sans JP，保留原版权与 OFL 正文 |
 | flutter_lints / test 等 | 仅开发与验证 | 具体版本和顶层许可见依赖清单 |
 | Playwright 1.65.0 | 可选浏览器测试工具 | Apache-2.0，不打包进入应用 |
 | fontTools 4.67.0 | 可选字体子集生成工具 | MIT，不打包进入应用 |
@@ -20,6 +20,7 @@
 - [已解析依赖清单](docs/development/dependency-inventory.md)：从当前恢复的 Dart/Flutter 包顶层许可正文生成，包含版本与原文摘要哈希。
 - [字体来源与重建](docs/development/third-party-assets.md)。
 - [字体原始许可](src/apps/pay_by_second/assets/fonts/OFL.txt)：随应用打包。
+- [日文字体原始许可](src/apps/pay_by_second/assets/fonts/OFL-JP.txt)：随应用打包。
 - [Flutter 框架原始许可](docs/legal/licenses/Flutter-LICENSE.txt)：保留生成的平台工程模板相关许可。
 - Web Release 的 `assets/NOTICES`：Flutter 构建生成的完整第三方声明，部署时不得移除。它是当前交付物的重要许可依据，不能只拿顶层依赖表替代。
 

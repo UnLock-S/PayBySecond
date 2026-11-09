@@ -10,7 +10,7 @@ foreach ($character in $seed.ToCharArray()) {
     $code = [int]$character
     if ($code -ge 128 -and -not $coverage.Contains($code)) { [void]$missing.Add($code) }
 }
-Get-ChildItem (Join-Path $root 'src') -Recurse -File -Filter '*.dart' |
+Get-ChildItem (Join-Path $root 'src') -Recurse -File | Where-Object { $_.Extension -in @('.dart', '.arb') } |
     Where-Object { $_.FullName -notmatch '[\\/](build|\.dart_tool)[\\/]' } | ForEach-Object {
         $text = Get-Content -LiteralPath $_.FullName -Raw -Encoding utf8
         foreach ($character in $text.ToCharArray()) {
