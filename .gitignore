@@ -35,5 +35,7 @@
 **/.DS_Store
 **/Thumbs.db
 **/*.log
+**/__pycache__/
+**/*.pyc
 
 # 不忽略 pubspec.lock：应用需要提交锁文件。

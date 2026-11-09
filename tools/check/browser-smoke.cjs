@@ -62,6 +62,10 @@ async function enableSemantics(page) {
     await page.getByRole('button', { name: /显示金额|隐藏金额/ }).first().click();
     await page.getByText(/^¥ \d/).first().waitFor();
     await page.mouse.move(0, 0);
+    await page.getByRole('button', { name: '开源许可', exact: true }).click();
+    await page.getByText('许可', { exact: true }).first().waitFor();
+    await page.getByRole('button', { name: '返回', exact: true }).click();
+    await page.getByRole('button', { name: '调整估算配置', exact: true }).waitFor();
     await page.screenshot({ path: path.join(output, 'dashboard-desktop.png') });
     await enableSemantics(page);
     await page.getByRole('button', { name: '调整估算配置', exact: true }).waitFor();
@@ -79,7 +83,7 @@ async function enableSemantics(page) {
     await mobilePage.screenshot({ path: path.join(output, 'dashboard-mobile.png') });
     assert.deepEqual(errors, [], 'No browser runtime exceptions');
     assert.deepEqual(remoteFonts, [], 'UI uses bundled fonts without remote fallback');
-    const report = { status: 'PASS', browser: await browser.version(), viewport: ['1365x1000', '390x844'], checks: ['profile editing', 'local persistence', 'live update', 'privacy mask', 'reload recovery', 'mobile rendering', 'bundled fonts'], errors, remoteFonts };
+    const report = { status: 'PASS', browser: await browser.version(), viewport: ['1365x1000', '390x844'], checks: ['profile editing', 'local persistence', 'live update', 'privacy mask', 'license page navigation', 'reload recovery', 'mobile rendering', 'bundled fonts'], errors, remoteFonts };
     fs.writeFileSync(path.join(output, 'result.json'), JSON.stringify(report, null, 2));
     console.log(JSON.stringify(report, null, 2));
   } catch (error) {

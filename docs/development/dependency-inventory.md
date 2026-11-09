@@ -1,0 +1,95 @@
+# 已解析 Dart / Flutter 依赖许可清单
+
+由 `python tools/check/license_inventory.py` 根据当前本机恢复的包许可正文生成。包含应用和计算包的直接、间接、开发及其他平台依赖，不等同于 Web 实际打包清单。
+
+共 85 个包/版本组合。许可名称为文本特征识别结果；多个名称不表达 AND/OR 授权关系，需以原正文为准。
+
+Flutter engine 为混合第三方声明，必须保留构建生成的 assets/NOTICES，不能据该表宣称整个引擎只有 BSD/MIT/Apache。原生发布仍需检查 Gradle/CocoaPods 等二级依赖。
+
+| 包 | 锁定版本 | 顶层许可识别 | 原文 SHA256 前12位 |
+|---|---|---|---|
+| [_fe_analyzer_shared](https://pub.dev/packages/_fe_analyzer_shared/versions/111.0.0/license) | 111.0.0 | BSD-3-Clause | `efa31b5ac790` |
+| [analyzer](https://pub.dev/packages/analyzer/versions/14.7.0/license) | 14.7.0 | BSD-3-Clause | `7e124af6a556` |
+| [args](https://pub.dev/packages/args/versions/2.7.0/license) | 2.7.0 | BSD-3-Clause | `dfb09c74e293` |
+| [async](https://pub.dev/packages/async/versions/2.13.1/license) | 2.13.1 | BSD-3-Clause | `ff15faa32a2e` |
+| [boolean_selector](https://pub.dev/packages/boolean_selector/versions/2.1.2/license) | 2.1.2 | BSD-3-Clause | `b71519245009` |
+| [characters](https://pub.dev/packages/characters/versions/1.4.1/license) | 1.4.1 | BSD-3-Clause | `0371d1da6a57` |
+| [cli_config](https://pub.dev/packages/cli_config/versions/0.2.0/license) | 0.2.0 | BSD-3-Clause | `605bcf409f23` |
+| [cli_util](https://pub.dev/packages/cli_util/versions/0.6.0/license) | 0.6.0 | BSD-3-Clause | `ff15faa32a2e` |
+| [clock](https://pub.dev/packages/clock/versions/1.1.3/license) | 1.1.3 | Apache-2.0 | `58d1e17ffe51` |
+| [code_assets](https://pub.dev/packages/code_assets/versions/2.2.0/license) | 2.2.0 | BSD-3-Clause | `21ae23b0b9ff` |
+| [collection](https://pub.dev/packages/collection/versions/1.19.1/license) | 1.19.1 | BSD-3-Clause | `ff15faa32a2e` |
+| [convert](https://pub.dev/packages/convert/versions/3.1.2/license) | 3.1.2 | BSD-3-Clause | `ad6a71997da9` |
+| [coverage](https://pub.dev/packages/coverage/versions/1.16.0/license) | 1.16.0 | BSD-3-Clause | `3c32b53167c7` |
+| [crypto](https://pub.dev/packages/crypto/versions/3.0.8/license) | 3.0.8 | BSD-3-Clause | `ad6a71997da9` |
+| [fake_async](https://pub.dev/packages/fake_async/versions/1.3.3/license) | 1.3.3 | Apache-2.0 | `58d1e17ffe51` |
+| [ffi](https://pub.dev/packages/ffi/versions/2.2.0/license) | 2.2.0 | BSD-3-Clause | `0371d1da6a57` |
+| [file](https://pub.dev/packages/file/versions/7.0.1/license) | 7.0.1 | BSD-3-Clause | `f6df86b14121` |
+| [flutter](https://github.com/flutter/flutter/tree/3.47.9) | 3.47.9 (SDK) | BSD-3-Clause | `a3a9fd82f800` |
+| [flutter_lints](https://pub.dev/packages/flutter_lints/versions/6.0.0/license) | 6.0.0 | BSD-3-Clause | `89519eca6f7b` |
+| [flutter_localizations](https://github.com/flutter/flutter/tree/3.47.9) | 3.47.9 (SDK) | BSD-3-Clause | `a3a9fd82f800` |
+| [flutter_test](https://github.com/flutter/flutter/tree/3.47.9) | 3.47.9 (SDK) | BSD-3-Clause | `a3a9fd82f800` |
+| [flutter_web_plugins](https://github.com/flutter/flutter/tree/3.47.9) | 3.47.9 (SDK) | BSD-3-Clause | `a3a9fd82f800` |
+| [frontend_server_client](https://pub.dev/packages/frontend_server_client/versions/4.2.0/license) | 4.2.0 | BSD-3-Clause | `2cfa3ee8e751` |
+| [glob](https://pub.dev/packages/glob/versions/2.2.0/license) | 2.2.0 | BSD-3-Clause | `3c32b53167c7` |
+| [hooks](https://pub.dev/packages/hooks/versions/2.2.0/license) | 2.2.0 | BSD-3-Clause | `21ae23b0b9ff` |
+| [http_multi_server](https://pub.dev/packages/http_multi_server/versions/3.2.3/license) | 3.2.3 | BSD-3-Clause | `ff0b91d4f3c3` |
+| [http_parser](https://pub.dev/packages/http_parser/versions/4.1.2/license) | 4.1.2 | BSD-3-Clause | `3c32b53167c7` |
+| [intl](https://pub.dev/packages/intl/versions/0.20.3/license) | 0.20.3 | BSD-3-Clause | `7e124af6a556` |
+| [io](https://pub.dev/packages/io/versions/1.1.0/license) | 1.1.0 | BSD-3-Clause | `ea97a7558a7b` |
+| [jni](https://pub.dev/packages/jni/versions/1.1.2/license) | 1.1.2 | BSD-3-Clause | `08a004aa8956` |
+| [jni_util](https://pub.dev/packages/jni_util/versions/1.0.0/license) | 1.0.0 | BSD-3-Clause | `b1fcb475d678` |
+| [leak_tracker](https://pub.dev/packages/leak_tracker/versions/11.0.2/license) | 11.0.2 | BSD-3-Clause | `08a004aa8956` |
+| [leak_tracker_flutter_testing](https://pub.dev/packages/leak_tracker_flutter_testing/versions/3.0.10/license) | 3.0.10 | BSD-3-Clause | `08a004aa8956` |
+| [leak_tracker_testing](https://pub.dev/packages/leak_tracker_testing/versions/3.0.2/license) | 3.0.2 | BSD-3-Clause | `08a004aa8956` |
+| [lints](https://pub.dev/packages/lints/versions/6.1.0/license) | 6.1.0 | BSD-3-Clause | `421fe78c3b5d` |
+| [logging](https://pub.dev/packages/logging/versions/1.3.0/license) | 1.3.0 | BSD-3-Clause | `dfb09c74e293` |
+| [matcher](https://pub.dev/packages/matcher/versions/0.12.20/license) | 0.12.20 | BSD-3-Clause | `3c32b53167c7` |
+| [material_color_utilities](https://pub.dev/packages/material_color_utilities/versions/0.13.0/license) | 0.13.0 | Apache-2.0 | `d103f246ef4c` |
+| [meta](https://pub.dev/packages/meta/versions/1.19.0/license) | 1.19.0 | BSD-3-Clause | `b71519245009` |
+| [mime](https://pub.dev/packages/mime/versions/2.1.0/license) | 2.1.0 | BSD-3-Clause | `ff15faa32a2e` |
+| [node_preamble](https://pub.dev/packages/node_preamble/versions/2.0.2/license) | 2.0.2 | BSD-3-Clause; MIT | `41997ee02074` |
+| [objective_c](https://pub.dev/packages/objective_c/versions/9.6.3/license) | 9.6.3 | BSD-3-Clause | `1cda25a8de68` |
+| [package_config](https://pub.dev/packages/package_config/versions/3.0.0/license) | 3.0.0 | BSD-3-Clause | `0371d1da6a57` |
+| [path](https://pub.dev/packages/path/versions/1.9.1/license) | 1.9.1 | BSD-3-Clause | `3c32b53167c7` |
+| [path_provider_linux](https://pub.dev/packages/path_provider_linux/versions/2.2.2/license) | 2.2.2 | BSD-3-Clause | `420f7739f169` |
+| [path_provider_platform_interface](https://pub.dev/packages/path_provider_platform_interface/versions/2.1.3/license) | 2.1.3 | BSD-3-Clause | `420f7739f169` |
+| [path_provider_windows](https://pub.dev/packages/path_provider_windows/versions/2.3.0/license) | 2.3.0 | BSD-3-Clause | `89519eca6f7b` |
+| [platform](https://pub.dev/packages/platform/versions/3.2.0/license) | 3.2.0 | BSD-3-Clause | `143839f62c9b` |
+| [plugin_platform_interface](https://pub.dev/packages/plugin_platform_interface/versions/2.1.8/license) | 2.1.8 | BSD-3-Clause | `89519eca6f7b` |
+| [pool](https://pub.dev/packages/pool/versions/1.5.3/license) | 1.5.3 | BSD-3-Clause | `3c32b53167c7` |
+| [pub_semver](https://pub.dev/packages/pub_semver/versions/2.2.1/license) | 2.2.1 | BSD-3-Clause | `3c32b53167c7` |
+| [record_use](https://pub.dev/packages/record_use/versions/1.1.1/license) | 1.1.1 | BSD-3-Clause | `1cda25a8de68` |
+| [shared_preferences](https://pub.dev/packages/shared_preferences/versions/2.5.6/license) | 2.5.6 | BSD-3-Clause | `420f7739f169` |
+| [shared_preferences_android](https://pub.dev/packages/shared_preferences_android/versions/2.5.4/license) | 2.5.4 | BSD-3-Clause | `420f7739f169` |
+| [shared_preferences_foundation](https://pub.dev/packages/shared_preferences_foundation/versions/2.6.1/license) | 2.6.1 | BSD-3-Clause | `420f7739f169` |
+| [shared_preferences_linux](https://pub.dev/packages/shared_preferences_linux/versions/2.4.1/license) | 2.4.1 | BSD-3-Clause | `89519eca6f7b` |
+| [shared_preferences_platform_interface](https://pub.dev/packages/shared_preferences_platform_interface/versions/2.4.2/license) | 2.4.2 | BSD-3-Clause | `420f7739f169` |
+| [shared_preferences_web](https://pub.dev/packages/shared_preferences_web/versions/2.4.3/license) | 2.4.3 | BSD-3-Clause | `89519eca6f7b` |
+| [shared_preferences_windows](https://pub.dev/packages/shared_preferences_windows/versions/2.4.1/license) | 2.4.1 | BSD-3-Clause | `89519eca6f7b` |
+| [shelf](https://pub.dev/packages/shelf/versions/1.4.3/license) | 1.4.3 | BSD-3-Clause | `ff0b91d4f3c3` |
+| [shelf_packages_handler](https://pub.dev/packages/shelf_packages_handler/versions/3.0.2/license) | 3.0.2 | BSD-3-Clause | `b71519245009` |
+| [shelf_static](https://pub.dev/packages/shelf_static/versions/1.2.0/license) | 1.2.0 | BSD-3-Clause | `ad6a71997da9` |
+| [shelf_web_socket](https://pub.dev/packages/shelf_web_socket/versions/3.0.0/license) | 3.0.0 | BSD-3-Clause | `ff0b91d4f3c3` |
+| [sky_engine](https://github.com/flutter/flutter/tree/3.47.9) | 3.47.9 (SDK) | Mixed: see Flutter engine NOTICES | `3c0040023a57` |
+| [source_map_stack_trace](https://pub.dev/packages/source_map_stack_trace/versions/2.1.2/license) | 2.1.2 | BSD-3-Clause | `ad6a71997da9` |
+| [source_maps](https://pub.dev/packages/source_maps/versions/0.10.14/license) | 0.10.14 | BSD-3-Clause | `ff0b91d4f3c3` |
+| [source_span](https://pub.dev/packages/source_span/versions/1.10.2/license) | 1.10.2 | BSD-3-Clause | `3c32b53167c7` |
+| [stack_trace](https://pub.dev/packages/stack_trace/versions/1.12.2/license) | 1.12.2 | BSD-3-Clause | `ff0b91d4f3c3` |
+| [stream_channel](https://pub.dev/packages/stream_channel/versions/2.1.4/license) | 2.1.4 | BSD-3-Clause | `ff15faa32a2e` |
+| [string_scanner](https://pub.dev/packages/string_scanner/versions/1.4.1/license) | 1.4.1 | BSD-3-Clause | `3c32b53167c7` |
+| [term_glyph](https://pub.dev/packages/term_glyph/versions/1.2.2/license) | 1.2.2 | BSD-3-Clause | `ea97a7558a7b` |
+| [test](https://pub.dev/packages/test/versions/1.33.0/license) | 1.33.0 | BSD-3-Clause | `3c32b53167c7` |
+| [test_api](https://pub.dev/packages/test_api/versions/0.7.12/license) | 0.7.12 | BSD-3-Clause | `ff1b9f0df903` |
+| [test_api](https://pub.dev/packages/test_api/versions/0.7.15/license) | 0.7.15 | BSD-3-Clause | `ff1b9f0df903` |
+| [test_core](https://pub.dev/packages/test_core/versions/0.6.21/license) | 0.6.21 | BSD-3-Clause | `ff1b9f0df903` |
+| [typed_data](https://pub.dev/packages/typed_data/versions/1.4.0/license) | 1.4.0 | BSD-3-Clause | `ff15faa32a2e` |
+| [vector_math](https://pub.dev/packages/vector_math/versions/2.4.4/license) | 2.4.4 | BSD-3-Clause | `420f7739f169` |
+| [vm_service](https://pub.dev/packages/vm_service/versions/15.4.0/license) | 15.4.0 | BSD-3-Clause | `ad6a71997da9` |
+| [watcher](https://pub.dev/packages/watcher/versions/1.2.1/license) | 1.2.1 | BSD-3-Clause | `3c32b53167c7` |
+| [web](https://pub.dev/packages/web/versions/1.1.2/license) | 1.1.2 | BSD-3-Clause | `aa913ff50d75` |
+| [web_socket](https://pub.dev/packages/web_socket/versions/1.0.1/license) | 1.0.1 | BSD-3-Clause | `cbe822ef3446` |
+| [web_socket_channel](https://pub.dev/packages/web_socket_channel/versions/3.0.3/license) | 3.0.3 | BSD-3-Clause | `a4b5d7d31626` |
+| [webkit_inspection_protocol](https://pub.dev/packages/webkit_inspection_protocol/versions/1.2.1/license) | 1.2.1 | BSD-3-Clause | `eb9a6b967231` |
+| [xdg_directories](https://pub.dev/packages/xdg_directories/versions/1.1.0/license) | 1.1.0 | BSD-3-Clause | `89519eca6f7b` |
+| [yaml](https://pub.dev/packages/yaml/versions/3.1.4/license) | 3.1.4 | MIT | `d47b93335401` |

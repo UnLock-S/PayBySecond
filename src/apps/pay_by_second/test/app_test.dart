@@ -32,6 +32,28 @@ class _Repository implements SettingsRepository {
 }
 
 void main() {
+  testWidgets('license page pauses the covered income dashboard', (
+    tester,
+  ) async {
+    final repository = _Repository()
+      ..value = Settings(salary: '10000', start: DateTime.utc(2026));
+    final clock = _Clock();
+    await tester.pumpWidget(
+      PayBySecondApp(repository: repository, clock: clock),
+    );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('开源许可'));
+    await tester.tap(find.text('开源许可'));
+    await tester.pumpAndSettle();
+    expect(find.byType(LicensePage), findsOneWidget);
+    final callsBefore = clock.calls;
+    await tester.pump(const Duration(minutes: 5));
+    expect(clock.calls, callsBefore);
+    await tester.tap(find.byTooltip('返回'));
+    await tester.pumpAndSettle();
+    expect(clock.calls, greaterThan(callsBefore));
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('configuration and work controls fit a mobile viewport', (
     tester,
   ) async {

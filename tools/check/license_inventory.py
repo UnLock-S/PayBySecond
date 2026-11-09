@@ -1,0 +1,69 @@
+"""Inventory resolved top-level package license texts, without network access.
+
+Requires restored Dart dependencies. This deliberately does not classify the
+Flutter engine's bundled third-party licenses as a single SPDX expression.
+"""
+import hashlib
+import json
+from pathlib import Path
+from urllib.parse import urljoin, urlparse
+from urllib.request import url2pathname
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def labels(text):
+    text = text.lower()
+    result = []
+    if "redistribution and use in source and binary forms" in text:
+        result.append("BSD-3-Clause" if "endorse or promote" in text else "BSD-2-Clause")
+    if "permission is hereby granted, free of charge" in text:
+        result.append("MIT")
+    if "apache license" in text and "version 2.0" in text:
+        result.append("Apache-2.0")
+    return result
+
+
+def main():
+    records = {}
+    sdk_version = (ROOT / ".flutter-version").read_text().strip()
+    for project in ("src/apps/pay_by_second", "src/packages/earnings_core"):
+        config = ROOT / project / ".dart_tool/package_config.json"
+        for item in json.loads(config.read_text(encoding="utf-8"))["packages"]:
+            name = item["name"]
+            if name in {"pay_by_second", "earnings_core"}:
+                continue
+            uri = urljoin(config.as_uri(), item["rootUri"])
+            directory = Path(url2pathname(urlparse(uri).path))
+            files = [p for p in directory.iterdir() if p.is_file() and p.name.upper() in {"LICENSE", "LICENSE.TXT", "LICENSE.MD", "COPYING"}]
+            sdk = name in {"flutter", "flutter_test", "flutter_localizations", "flutter_web_plugins", "sky_engine"}
+            if not files and sdk:
+                files = [directory.parents[1] / "LICENSE"]
+            if not files or any(not p.exists() for p in files):
+                raise SystemExit(f"License missing: {name}")
+            payload = b"\n".join(p.read_bytes() for p in files)
+            identified = labels(payload.decode("utf-8", errors="replace"))
+            if name == "sky_engine":
+                identified = ["Mixed: see Flutter engine NOTICES"]
+            elif not identified:
+                raise SystemExit(f"Unrecognized license; manual review required: {name}")
+            version = sdk_version + " (SDK)" if sdk else directory.name.removeprefix(name + "-")
+            records[(name, version)] = {
+                "name": name, "version": version, "identified": identified,
+                "sha256": hashlib.sha256(payload).hexdigest(),
+                "source": "https://github.com/flutter/flutter/tree/" + sdk_version if sdk else f"https://pub.dev/packages/{name}/versions/{version}/license",
+            }
+    rows = sorted(records.values(), key=lambda r: (r["name"], r["version"]))
+    lines = ["# 已解析 Dart / Flutter 依赖许可清单", "",
+        "由 `python tools/check/license_inventory.py` 根据当前本机恢复的包许可正文生成。包含应用和计算包的直接、间接、开发及其他平台依赖，不等同于 Web 实际打包清单。", "",
+        f"共 {len(rows)} 个包/版本组合。许可名称为文本特征识别结果；多个名称不表达 AND/OR 授权关系，需以原正文为准。", "",
+        "Flutter engine 为混合第三方声明，必须保留构建生成的 assets/NOTICES，不能据该表宣称整个引擎只有 BSD/MIT/Apache。原生发布仍需检查 Gradle/CocoaPods 等二级依赖。", "",
+        "| 包 | 锁定版本 | 顶层许可识别 | 原文 SHA256 前12位 |", "|---|---|---|---|"]
+    for r in rows:
+        lines.append(f"| [{r['name']}]({r['source']}) | {r['version']} | {'; '.join(r['identified'])} | `{r['sha256'][:12]}` |")
+    (ROOT / "docs/development/dependency-inventory.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"Inventoried {len(rows)} resolved package/version license texts")
+
+
+if __name__ == "__main__":
+    main()

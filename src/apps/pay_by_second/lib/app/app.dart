@@ -137,6 +137,16 @@ class _HomeState extends State<_Home> {
     }
   }
 
+  Future<void> _licenses() async {
+    setState(() => _editing = true);
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => const LicensePage(applicationName: 'PayBySecond'),
+      ),
+    );
+    if (mounted) setState(() => _editing = false);
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     body: SafeArea(
@@ -259,6 +269,10 @@ class _HomeState extends State<_Home> {
                 const Text(
                   '预计收入 ≠ 实际到账。当前为人民币、UTC+08:00 固定时区；账号、自动法定日历与薪资历史尚未接入。',
                   style: TextStyle(fontSize: 12, color: Color(0xFF687A7C)),
+                ),
+                TextButton(
+                  onPressed: _editing ? null : _licenses,
+                  child: const Text('开源许可'),
                 ),
                 const SizedBox(height: 8),
                 const Text(
