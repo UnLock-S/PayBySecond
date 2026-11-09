@@ -1,6 +1,6 @@
 # 验证计划
 
-状态：计划，尚未实现测试或运行检查。需求明细见 requirements/product-spec.md。
+状态：完整产品验证计划；部分已在 Web MVP 实现并验证，结果见 [首版验证记录](web-mvp-validation.md)。尚未实现的完整产品能力不视为通过。需求明细见 ../requirements/product-spec.md。
 
 | 层级 | 位置 | 重点 |
 |---|---|---|

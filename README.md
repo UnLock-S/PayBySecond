@@ -2,7 +2,21 @@
 
 实时工资估算工具，Flutter Web 优先验证，后续交付 Android APK，再扩展 Windows、Linux、macOS。
 
-当前仓库是设计与目录骨架，尚未初始化 Flutter/Dart 工程，也不能直接运行。没有占位业务实现或未经验证的构建配置。
+当前为 Web 本机体验版：已实现独立工资计算包、薪资配置、实时面板、本地保存及生命周期刷新。真实账号、官方节假日日历和薪资历史尚未接入；Android 平台工程尚未启用。
+
+## 启动与检查
+
+安装 `.flutter-version` 指定的 Flutter SDK（包含 Dart），使用 PowerShell 7 在仓库根执行：
+
+```powershell
+./tools/bootstrap/setup.ps1 -FlutterRoot '<Flutter SDK目录>'
+./tools/check/check.ps1
+./tools/run/web.ps1
+```
+
+运行地址为 `http://127.0.0.1:7357`。脚本只记录本机 SDK 路径到被忽略的 `.local/`，不修改全局 PATH。`./tools/build/web.ps1` 构建 Release 并归档至 `out/web/`，部署时需提供 HTTP/HTTPS 静态服务，不能直接双击 index.html。
+
+当前界面的“调整估算配置”会显式提示重算全部历史。时区固定为 UTC+08:00，数据只保存在本机且未加密；浏览器清理存储后可能丢失。不要将体验版当作实际工资结算或唯一数据记录。
 
 ## 阅读入口
 
@@ -11,6 +25,9 @@
 - [开发环境与配置管理](docs/development/environment.md)
 - [验证与发布门槛](docs/testing/verification-plan.md)
 - [架构决策 ADR-001](docs/architecture/decisions/0001-web-first-flutter.md)
+- [Git 维护约定](docs/development/git-workflow.md)
+- [首版验证记录](docs/testing/web-mvp-validation.md)
+- [第三方字体与重建说明](docs/development/third-party-assets.md)
 
 ## 顶层分工
 

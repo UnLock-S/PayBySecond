@@ -2,7 +2,7 @@
 
 ## 当前状态
 
-只有目录骨架和设计文档，尚未选择 Flutter/Dart、Android SDK 和 JDK 具体版本，没有安装依赖或执行工程初始化。首次初始化后记录版本与安装方式，应用提交 pubspec.lock，并在 CI 复用相同版本。
+Web 客户端与纯 Dart 计算包已建立。Flutter 锁定 3.47.9（根目录 .flutter-version），所带 Dart 为 3.13.7。当前机器的 SDK 以 stable 浅克隆安装在工作区外的项目专用工具链目录，未修改全局 PATH；实际路径保存在被忽略的 .local/toolchain.json。应用和计算包均提交 pubspec.lock。Android SDK/JDK 本阶段不安装、不要求配置。
 
 ## 环境边界
 
@@ -34,4 +34,8 @@ Web 阶段需要 Flutter SDK 及可用的浏览器/调试环境。Android 阶段
 - tools/check：格式、静态分析、单测、日历和配置校验。
 - tools/build：Release 构建与 out/ 归档；签名秘密从外部注入。
 
-首选支持 PowerShell 7 的 .ps1 脚本以覆盖不同宿主；需要 Flutter/Dart 后的配置生成可采用 Dart 工具。脚本自身不包含机器绝对路径。当前目录中尚无这些脚本，不应将目录存在误认为自动化已经可用。
+已提供 PowerShell 7 脚本：bootstrap/setup.ps1、run/web.ps1、check/check.ps1、build/web.ps1。脚本通过显式参数、PBS_FLUTTER_ROOT 或本机 toolchain.json 定位 SDK，不包含机器绝对路径。bootstrap 检查版本并恢复依赖，不安装或升级全局 SDK。
+
+首次初始化的 Web 平台模板在 .local/flutter_scaffold 中通过 Flutter CLI 生成，再仅将 web/ 和 .metadata 纳入应用，避免覆盖已编写的业务源码。该临时模板不提交。
+
+当前只使用开发本机模式，env/examples 的认证地址模板尚未接入运行配置；不会向该地址发送伪认证请求。公开日历配置生成、CI 发布和秘密注入也留待对应功能实现。

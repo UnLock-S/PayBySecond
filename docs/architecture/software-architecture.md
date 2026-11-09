@@ -29,7 +29,7 @@ PayBySecond/
   src/
     apps/
       pay_by_second/                # 唯一 Flutter 客户端工程根
-        pubspec.yaml               # 后续由工程初始化创建
+        pubspec.yaml               # Flutter 依赖与资源入口
         pubspec.lock               # 应用锁文件提交
         analysis_options.yaml
         lib/
@@ -192,4 +192,6 @@ CI 平台要求的入口文件，例如未来的 .github/workflows 或 .gitlab-c
 
 文档描述需求与设计；可执行规则来自代码、配置 schema 和测试。修改工资口径时同时修改需求、计算实现和边界用例，不另写一套散落的公式文档。每项重要决策以 ADR 记录原因、影响和替代方案。
 
-当前只落地目录和说明；pubspec、入口源码、脚本、日历包和平台工程均在实际开发阶段通过工具链生成或实现，避免假工程看似可构建。
+当前已落地 Web 客户端、纯 Dart 计算包、测试、运行/构建脚本与 Web 平台工程。真实认证、官方日历包、历史版本和其余原生平台尚未实现，具体首版边界见 ADR-002。
+
+目标架构与 MVP 的简化须区分：当前启动页承担配置读取/保存编排，DashboardState 持有可见性监听和单个刷新 Timer，尚未提取独立的配置 UseCase、VisibilitySource 或 RefreshCoordinator。工资算法与配置模型已独立，存储通过 Repository 注入；引入账号和历史版本时按本设计继续拆分，不把当前实现描述为所有目标模块均已完成。
