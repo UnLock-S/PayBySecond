@@ -29,6 +29,7 @@ async function snapshot(page,name){await page.mouse.move(0,0);await page.waitFor
   await clickButton(page,translations.zh.start);
   await fill(page,translations.zh.salaryInput,'20000');await fill(page,translations.zh.dateInput,'20260101');
   await clickButton(page,translations.zh.next);
+  await page.getByRole('textbox').first().waitFor({state:'detached'});
   assert.equal(await page.getByRole('textbox').count(),0,'Calculation step excludes salary fields');
   await clickButton(page,translations.zh.next);
   assert.equal(await page.evaluate(()=>Object.keys(localStorage).some(k=>k.endsWith('pay_by_second.profile.v1'))),false,'Draft stays unsaved until confirmation');

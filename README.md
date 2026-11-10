@@ -45,6 +45,7 @@ Configure owner/repository in config/app/updates.json. A public repository still
 
 ### Documentation
 
+- [Phased upgrade audit](docs/audit/2026-11-paybysecond-audit.md)
 - [Requirements/calculation policy](docs/requirements/product-spec.md)
 - [Architecture/layout](docs/architecture/software-architecture.md)
 - [Multipage/language UI](docs/design/ui-navigation.md)
@@ -115,6 +116,7 @@ Do not create placeholder files for every planned empty directory. Prefer built-
 
 ### 阅读入口
 
+- [分阶段升级审计](docs/audit/2026-11-paybysecond-audit.md)
 - [产品需求与计算口径](docs/requirements/product-spec.md)
 - [软件架构与目录约定](docs/architecture/software-architecture.md)
 - [多页面与多语言界面设计](docs/design/ui-navigation.md)
