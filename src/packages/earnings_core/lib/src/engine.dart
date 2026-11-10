@@ -143,7 +143,7 @@ class EarningsEngine {
     }
     if (start.isBefore(policy.startDate)) start = policy.startDate;
     if (!end.isAfter(start)) return Money.zero;
-    if (end.year > 2101 || start.year < 1970) {
+    if (end.isAfter(DateTime.utc(2101)) || start.year < 1970) {
       throw ArgumentError('Supported calculation range: 1970–2100');
     }
     var total = Money.zero;

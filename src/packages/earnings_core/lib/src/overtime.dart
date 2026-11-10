@@ -80,7 +80,13 @@ class OvertimeEntry {
     required this.policy,
   }) : start = start.toUtc(),
        end = end?.toUtc() {
-    if (id < 1 || (this.end != null && this.end!.isBefore(this.start))) {
+    if (id < 1 ||
+        this.start.year < 1970 ||
+        this.start.year > 2100 ||
+        (this.end != null &&
+            (this.end!.year < 1970 ||
+                this.end!.year > 2100 ||
+                this.end!.isBefore(this.start)))) {
       throw ArgumentError('Invalid overtime interval');
     }
   }

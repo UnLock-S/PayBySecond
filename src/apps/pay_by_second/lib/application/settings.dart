@@ -86,9 +86,17 @@ class Settings {
 
   factory Settings.fromJson(Map<String, dynamic> data) {
     if (data['schemaVersion'] != 1) throw const FormatException('无法读取此版本配置');
+    final storedDate = data['start'];
+    final parsedDate = storedDate is String
+        ? DateTime.tryParse(storedDate)
+        : null;
+    if (parsedDate == null ||
+        EarningsPolicy.dateKey(parsedDate) != storedDate) {
+      throw const FormatException('Invalid employment calendar date');
+    }
     final s = Settings(
       salary: data['salary'] as String,
-      start: DateTime.parse(data['start'] as String),
+      start: parsedDate,
       mode: AccrualMode.values.byName(data['mode'] as String),
       basis: SalaryBasis.values.byName(data['basis'] as String),
       weekdays: (data['weekdays'] as List).cast<int>().toSet(),

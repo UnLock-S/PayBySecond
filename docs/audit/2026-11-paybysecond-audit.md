@@ -61,6 +61,10 @@ Machine artifacts are ignored under `out/reports/upgrade-p0-a/`: baseline-check.
 
 Status: PASS for audit completion, not product completion. Browser rerun passed in all three languages at desktop/phone viewports, with zero runtime errors, remote font requests or Web APK checks after fixing the harness transition wait. Original 46 tests and 24 layout cases are green; three new boundary regression tests are intentionally red and move to P0-B. Screenshots are archived separately so P1 cannot overwrite the baseline.
 
+### P0-B boundary slice
+
+The three reproduced regressions are now fixed: persisted employment dates require canonical valid calendar dates; overtime constructors reject dates their reader cannot restore; core queries reject exclusive ends after 2101-01-01. Standard checks pass with 13 core + 62 app tests, including all 24 new layouts and five audit probes. This closes the reproduced boundary defects only; history/migration/policy/UI work continues.
+
 ## 中文
 
 ### 范围与基线
@@ -121,3 +125,7 @@ P0-A在实测、分类及浏览器重跑登记后完成，不宣称三个反例�
 ### P0-A收口
 
 审计完成状态PASS，不等于产品修复完成。修正工具等待后，三语桌面/手机浏览器重跑通过，运行异常、远程字体请求及Web APK检查均为0。原46项与24个布局用例通过，3个新增边界反例保留失败交由P0-B修复。截图单独归档，避免P1覆盖基线。
+
+### P0-B边界修复切片
+
+三处反例已修复：存储入职日须为规范且真实的日期；加班构造器拒绝读回时无法恢复的年份；核心拒绝超过2101-01-01排他边界的查询。标准检查现为13项核心＋62项应用通过，包含24项布局及5项审计探针。仅关闭已复现边界缺陷，版本、迁移、政策和UI仍继续。
