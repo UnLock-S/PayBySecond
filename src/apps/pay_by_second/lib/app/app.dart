@@ -394,9 +394,28 @@ class _HomeState extends State<_Home> {
         actions: [
           if (_settings != null)
             IconButton(
+              key: const Key('quick-overtime-toggle'),
+              tooltip: l.otTitle,
+              onPressed:
+                  _away ||
+                      _overtime.busy ||
+                      _overtime.loading ||
+                      _overtime.failed
+                  ? null
+                  : _toggleOvertime,
+              icon: Icon(
+                _overtime.book.active == null
+                    ? Icons.more_time
+                    : Icons.stop_circle_outlined,
+              ),
+            ),
+          if (_settings != null)
+            IconButton(
               key: const Key('open-settings'),
               tooltip: l.settings,
-              onPressed: _away ? null : _settingsPage,
+              onPressed: _away || (_settings?.migrationPending ?? false)
+                  ? null
+                  : _settingsPage,
               icon: const Icon(Icons.tune_rounded),
             )
           else
@@ -495,6 +514,8 @@ class _HomeState extends State<_Home> {
             if (_settings?.migrationPending ?? false) ...[
               Text(l.migrationPending),
               TextButton(onPressed: _load, child: Text(l.retry)),
+              if (widget.backup != null)
+                TextButton(onPressed: _recovery, child: Text(l.recoveryTitle)),
             ],
             if (_loading)
               const Center(child: CircularProgressIndicator())

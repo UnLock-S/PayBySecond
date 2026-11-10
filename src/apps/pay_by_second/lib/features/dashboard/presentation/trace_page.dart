@@ -5,7 +5,7 @@ import '../../../shared/presentation/design.dart';
 import '../../../shared/presentation/financial_privacy.dart';
 import 'dashboard.dart';
 
-class TracePage extends StatelessWidget {
+class TracePage extends StatefulWidget {
   const TracePage({
     super.key,
     required this.settings,
@@ -16,13 +16,20 @@ class TracePage extends StatelessWidget {
   final DateTime now;
   final Period period;
   @override
+  State<TracePage> createState() => _TracePageState();
+}
+
+class _TracePageState extends State<TracePage> {
+  int limit = 30;
+  late final engine = widget.settings.toEngine();
+  late final civil = engine.civilTime(widget.now);
+  late final start = engine.periodStart(widget.period, widget.now);
+  late final parts = engine.traceBetweenCivil(start, civil);
+  @override
   Widget build(BuildContext context) {
     final l = context.l,
-        engine = settings.toEngine(),
-        hidden = FinancialPrivacy.hidden(context);
-    final civil = engine.civilTime(now),
-        start = engine.periodStart(period, now);
-    final parts = engine.traceBetweenCivil(start, civil);
+        hidden = FinancialPrivacy.hidden(context),
+        settings = widget.settings;
     return Scaffold(
       appBar: AppBar(title: Text(l.traceTitle)),
       body: PageBody(
@@ -32,10 +39,10 @@ class TracePage extends StatelessWidget {
             Text(l.traceHelp),
             const SizedBox(height: 16),
             Text(
-              '${periodLabel(period, l)} · ${EarningsPolicy.dateKey(start)} → ${civil.toIso8601String()}',
+              '${periodLabel(widget.period, l)} · ${EarningsPolicy.dateKey(start)} → ${civil.toIso8601String()}',
             ),
             const SizedBox(height: 16),
-            for (final part in parts)
+            for (final part in parts.take(limit))
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Surface(
@@ -52,6 +59,7 @@ class TracePage extends StatelessWidget {
                       Text(
                         'salary.budget.v1 · ${part.numeratorMs} / ${part.denominatorMs} ms',
                       ),
+                      if (part.denominatorMs == 0) Text(l.noEligibleTime),
                       Text(
                         hidden
                             ? '••••'
@@ -61,12 +69,22 @@ class TracePage extends StatelessWidget {
                         SelectableText(
                           '${part.toJson()['exactAmountMinorRational']}',
                         ),
-                      Text(
-                        'calendar: ${settings.document?.scheduleAt(part.start).fields['calendarVersion'] ?? settings.calendarVersion ?? 'personal'}',
-                      ),
+                      Text('${l.policySource}: ${part.calendarVersion}'),
+                      if (part.calendarSourceDigest != null)
+                        SelectableText('SHA-256 ${part.calendarSourceDigest}'),
+                      if (settings.document
+                              ?.scheduleAt(part.start)
+                              .fields['calendarSource']
+                          case final Map source)
+                        Text('${(source['source'] as Map)['url']}'),
                     ],
                   ),
                 ),
+              ),
+            if (parts.length > limit)
+              TextButton(
+                onPressed: () => setState(() => limit += 30),
+                child: Text(l.moreDetails),
               ),
             if (parts.isEmpty) Text(l.notStarted),
           ],

@@ -4,7 +4,7 @@
 
 ### Scope and baseline
 
-P0-A, 2026-11-10. Baseline: `213fefb` on main, synchronized with origin with no local changes. Work proceeds on `feat/phased-upgrade-p0-p1`; no main merge, ruleset bypass, release publication or APK upload is authorized. The supplied upgrade plan is the task input; existing findings are rechecked rather than assumed.
+P0-A, 2026-11-10. Baseline: `213fefb` on main, synchronized with origin with no local changes. At audit start, work was limited to `feat/phased-upgrade-p0-p1` without merge/release authorization. The owner later explicitly authorized PR merge and release; main protection remains unchanged. The supplied upgrade plan is the task input; existing findings are rechecked rather than assumed.
 
 Required evidence is separate from actual evidence. Inspection establishes design gaps; a failing executable counterexample establishes a reproduced defect. `confirmed`, `not-reproduced`, `design-gap` and `deferred` describe audit outcomes, not implementation completion. Severity: S1 data integrity/misleading historical result; S2 calculation boundary or significant feature gap; S3 tooling/usability. No payroll/tax certification is claimed.
 
@@ -72,6 +72,8 @@ The integrated checker now passes 25 core and 158 application tests, including 7
 History, independent salary/schedule effective rules, selected overnight attribution, merged work/break intervals and exact calculation traces are implemented. Profile and overtime copy-on-write migration retain v1 originals, detect legacy edits and reject stale writes. Fault injection proves retry, corrupted-value failure, pre-import journal rollback, retained pre-import state and checksum/schema rejection. New overtime estimates retain unknown cross-day time as pending and separate compensatory time. Local user review is recorded, never fabricated as a project/government approval. The new reference date test exposed device-local parsing in the newly added code; normalized UTC civil parsing fixed it before release. Existing legacy snapshots keep their arithmetic.
 
 See [implemented design and limits](../design/versioned-calculation-and-data.md). The bundled 2026 source is pending human verification and not an automatic statutory-holiday classifier. Software release and policy updates are independent. The owner subsequently authorized PR merge and a new release; this replaces the earlier no-merge/no-release scope, without authorizing force push or protection changes. Browser/native package validation and final measured coverage are still pending at this checkpoint; P2 remains deferred.
+
+Final stage evidence: [P0/P1 execution report](2026-11-upgrade-execution.md). Current validation is 29 core + 159 app tests; final browser reruns and Android static package checks pass. Physical-device qualification and human policy verification remain explicitly unclaimed.
 
 ## 中文
 
@@ -145,3 +147,5 @@ P0-A在实测、分类及浏览器重跑登记后完成，不宣称三个反例�
 已实现独立薪资/排班生效历史、可选跨日归属、多工作/休息时段合并及精确追溯。档案、加班写时复制迁移保留 v1 原文，检测旧版改写并拒绝过期写入。故障注入覆盖重试、损坏失败关闭、导入预写日志回滚、导入前状态保留及摘要/结构拒绝。新加班记录将未知跨日工时保留待核验，补休单列。本地用户核验真实记录，不冒充项目或政府批准。新增日期用例暴露新代码中设备本地日期解析问题，已在发布前修正为 UTC 民用组件；原快照算法保留。
 
 详见[实现设计与边界](../design/versioned-calculation-and-data.md)。内置 2026 来源待人工核验，不自动认定法定节日；软件与政策更新独立。所有者后续已授权主动合入 PR 并发布新 Release，替代此前禁止合入/发布的范围，但不授权强推或改变保护。本检查点的浏览器、原生包和最终覆盖率仍待验证，P2 继续后置。
+
+最终阶段证据见 [P0/P1 执行报告](2026-11-upgrade-execution.md)。当前 29 项核心 + 159 项应用通过，最终浏览器重跑和 Android 包静态检查通过；不宣称已完成真机验收或人工政策核验。

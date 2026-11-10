@@ -44,7 +44,7 @@ class HistoryPage extends StatelessWidget {
                   '${rule.id} · ${EarningsPolicy.dateKey(rule.from)}',
                 ),
                 subtitle: Text(
-                  '${rule.createdAt.toIso8601String()} · ${rule.fields['shiftAttribution'] ?? 'calendarDate'}',
+                  '${rule.createdAt.toIso8601String()} · ${rule.fields['shiftAttribution'] == 'shiftStartDate' ? l.shiftStartDate : l.calendarDate}',
                 ),
               ),
             const Divider(),

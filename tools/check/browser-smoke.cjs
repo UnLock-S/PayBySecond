@@ -55,7 +55,9 @@ async function snapshot(page,name){await page.mouse.move(0,0);await page.waitFor
    await clickButton(page,translations[lang].settings);
    await snapshot(page,'settings-desktop-'+lang);
    for(const section of ['salary','calculation','schedule','calendar','display']){
-    await clickButton(page,translations[lang][section],false);
+    const sectionCopy=JSON.parse(fs.readFileSync(path.join(root,'src/apps/pay_by_second/lib/l10n/app_'+lang+'.arb'),'utf8'));
+    const subtitle={salary:'salarySummary',calculation:'calculationSummary',schedule:'scheduleSummary',calendar:'calendarSummary',display:'displaySummary'}[section];
+    await clickButton(page,translations[lang][section]+' '+sectionCopy[subtitle]);
     await page.getByText(translations[lang][section],{exact:true}).first().waitFor();
     if(section==='salary')await snapshot(page,'salary-desktop-'+lang);
     await back(page,lang);
@@ -75,7 +77,7 @@ async function snapshot(page,name){await page.mouse.move(0,0);await page.waitFor
    const phone=await mobile.newPage();await boot(phone);await phone.getByText(translations[lang].headline,{exact:true}).waitFor();await snapshot(phone,'dashboard-mobile-'+lang);
    await clickButton(phone,translations[lang].settings);
    await snapshot(phone,'settings-mobile-'+lang);
-   await clickButton(phone,translations[lang].salary,false);await phone.getByRole('textbox').first().waitFor();await snapshot(phone,'salary-mobile-'+lang);
+   await clickButton(phone,translations[lang].salary+' '+updateText.salarySummary);await phone.getByRole('textbox').first().waitFor();await snapshot(phone,'salary-mobile-'+lang);
    await back(phone,lang);await clickButton(phone,updateText.softwareUpdate,false);
    await phone.getByText(updateText.updateWebHelp,{exact:true}).waitFor();await snapshot(phone,'updates-mobile-'+lang);
    await mobile.close();
@@ -116,9 +118,12 @@ async function snapshot(page,name){await page.mouse.move(0,0);await page.waitFor
   const configured=await ledger();assert.equal(configured.policy.multiplier,250);
   assert.equal(configured.active.policy.pay,'unpaid','Defaults do not rewrite the active snapshot');
   await back(page,'ja');await clickButton(page,ot.otStop);
+  await page.waitForFunction(()=>{const key=Object.keys(localStorage).find(k=>k.endsWith('pay_by_second.overtime.v2'));if(!key)return false;let v=JSON.parse(localStorage.getItem(key));if(typeof v==='string')v=JSON.parse(v);return v.payload.active===null;});
   const mobileOT=await context({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true,storageState:await desktop.storageState()});
   const otPhone=await mobileOT.newPage();await boot(otPhone);
-  await clickButton(otPhone,ot.otStart);await otPhone.getByRole('button',{name:ot.otStop,exact:true}).waitFor();
+  await clickButton(otPhone,ot.otTitle);
+  await otPhone.waitForFunction(()=>{const key=Object.keys(localStorage).find(k=>k.endsWith('pay_by_second.overtime.v2'));if(!key)return false;let v=JSON.parse(localStorage.getItem(key));if(typeof v==='string')v=JSON.parse(v);return !!v.payload.active;});
+  await otPhone.mouse.move(180,500);await otPhone.mouse.wheel(0,1600);await otPhone.waitForTimeout(350);
   await snapshot(otPhone,'overtime-active-mobile-ja');
   await clickButton(otPhone,ot.otDetails);await snapshot(otPhone,'overtime-history-mobile-ja');
   await clickButton(otPhone,ot.otSettings);await snapshot(otPhone,'overtime-settings-mobile-ja');

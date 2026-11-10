@@ -55,9 +55,14 @@ class OvertimePolicy {
   final String? classificationDate;
   bool get legacy => referenceVersion == 'legacy-unverified';
   int get statutoryMultiplier => switch (day) {
-    OvertimeDay.weekday => 150,
-    OvertimeDay.rest => compensatoryLeave ? 0 : 200,
-    OvertimeDay.holiday => 300,
+    OvertimeDay.weekday => int.parse(cnStandard2025['weekdayPercent']!),
+    OvertimeDay.rest =>
+      compensatoryLeave
+          ? 0
+          : int.parse(cnStandard2025['restWithoutLeavePercent']!),
+    OvertimeDay.holiday => int.parse(
+      cnStandard2025['statutoryHolidayPercent']!,
+    ),
   };
   int get expectedMultiplier => switch (pay) {
     OvertimePay.unpaid => 0,

@@ -131,6 +131,8 @@ class ProfileDocument {
        updatedAt = updatedAt ?? createdAt,
        replaced = List.unmodifiable(replaced.map(_freezeMap)) {
     if (revision < 1 ||
+        revision > 1000000000 ||
+        nextId > 1000000000 ||
         nextId < 2 ||
         replaced.length > 512 ||
         ![100, 1000].contains(refreshMs) ||
@@ -153,9 +155,21 @@ class ProfileDocument {
       );
     }
     engine();
+    for (final value in replaced) {
+      _utcCreated(value['replacedAt']);
+      final previous = value['previous'] as Map<String, dynamic>;
+      if (value['kind'] == 'salary') {
+        SalaryRecord.fromJson(previous).toCore();
+      } else if (value['kind'] == 'schedule') {
+        ScheduleRecord.fromJson(previous).toCore(employmentStart);
+      } else {
+        throw const FormatException('Unknown archive kind');
+      }
+    }
     for (final id in [
       ...salaries.map((v) => v.id),
       ...schedules.map((v) => v.id),
+      ...replaced.map((v) => (v['previous'] as Map)['id'] as String),
     ]) {
       final number = int.tryParse(id.split('-').last);
       if (number == null || number >= nextId) {
@@ -237,6 +251,7 @@ class ProfileDocument {
       breaks: snapshot.breaks,
       policyOverrides: snapshot.policyOverrides,
       calendarVersion: snapshot.calendarVersion,
+      calendarSource: snapshot.calendarSource,
       document: this,
       viewDate: civil,
       migrationPending: migrationPending,

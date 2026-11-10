@@ -2,7 +2,7 @@
 
 ## English
 
-**Android test APK:** [Download v0.2.1](https://github.com/UnLock-S/PayBySecond/releases/download/v0.2.1/PayBySecond-0.2.1-arm64-v8a-test.apk) · [Release notes and SHA256](https://github.com/UnLock-S/PayBySecond/releases/tag/v0.2.1). Android 7.0+, ARM64; Release-optimized with the existing Debug test certificate. Older local versions without an updater need this version installed manually once.
+**Android test APK:** [Download v0.3.0](https://github.com/UnLock-S/PayBySecond/releases/download/v0.3.0/PayBySecond-0.3.0-arm64-v8a-test.apk) · [Release notes and SHA256](https://github.com/UnLock-S/PayBySecond/releases/tag/v0.3.0). Android 7.0+, ARM64; Release-optimized with the existing Debug test certificate. Older local versions without an updater need this version installed manually once.
 
 PayBySecond is a live income estimator: validate on Flutter Web first, deliver Android APK from the same client, then extend to Windows/Linux/macOS.
 
@@ -47,6 +47,7 @@ Configure owner/repository in config/app/updates.json. A public repository still
 
 ### Documentation
 
+- [P0/P1 execution report](docs/audit/2026-11-upgrade-execution.md)
 - [Phased upgrade audit](docs/audit/2026-11-paybysecond-audit.md)
 - [Requirements/calculation policy](docs/requirements/product-spec.md)
 - [Architecture/layout](docs/architecture/software-architecture.md)
@@ -81,11 +82,11 @@ Do not create placeholder files for every planned empty directory. Prefer built-
 
 ## 中文
 
-**Android测试包：**[下载v0.2.1](https://github.com/UnLock-S/PayBySecond/releases/download/v0.2.1/PayBySecond-0.2.1-arm64-v8a-test.apk) · [更新说明与SHA256](https://github.com/UnLock-S/PayBySecond/releases/tag/v0.2.1)。适用于Android 7.0+、ARM64，Release优化并沿用Debug测试证书。旧版若没有更新入口，需先手动安装本版一次。
+**Android测试包：**[下载v0.3.0](https://github.com/UnLock-S/PayBySecond/releases/download/v0.3.0/PayBySecond-0.3.0-arm64-v8a-test.apk) · [更新说明与SHA256](https://github.com/UnLock-S/PayBySecond/releases/tag/v0.3.0)。适用于Android 7.0+、ARM64，Release优化并沿用Debug测试证书。旧版若没有更新入口，需先手动安装本版一次。
 
 实时工资估算工具，Flutter Web 优先验证，后续交付 Android APK，再扩展 Windows、Linux、macOS。
 
-仓库：[UnLock-S/PayBySecond](https://github.com/UnLock-S/PayBySecond)。当前直接维护 `main`。
+仓库：[UnLock-S/PayBySecond](https://github.com/UnLock-S/PayBySecond)。本次升级通过功能分支及 PR，main 保留仅管理员写入保护。
 
 当前为 Web 本机体验版：已实现独立工资计算包、薪资配置、实时面板、本地保存及生命周期刷新。已加入带生效日的薪资/排班历史、可恢复 v2 数据、明文 JSON 备份、计算依据、可选跨日归属和日历/政策核验；内置 2026 安排仍待人工核验，未确认法定分类保持未知。真实账号、同步、工资结算及税费未实现；Android 已通过本机隔离平台工程生成测试 APK，平台源码保留在src，构建产物和本机配置不提交。
 
@@ -118,6 +119,7 @@ Do not create placeholder files for every planned empty directory. Prefer built-
 
 ### 阅读入口
 
+- [P0/P1 升级执行报告](docs/audit/2026-11-upgrade-execution.md)
 - [分阶段升级审计](docs/audit/2026-11-paybysecond-audit.md)
 - [产品需求与计算口径](docs/requirements/product-spec.md)
 - [软件架构与目录约定](docs/architecture/software-architecture.md)

@@ -65,13 +65,17 @@ class CalculationSegment {
     this.salaryRuleId = 'current-salary',
     this.scheduleRuleId = 'current-schedule',
     this.utcOffsetMinutes = 480,
+    this.calendarVersion = 'personal-weekly',
+    this.calendarSourceDigest,
   });
   final DateTime start, end;
   final Money amount, budget;
   final int numeratorMs, denominatorMs;
   final int utcOffsetMinutes;
   final String salaryRuleId, scheduleRuleId;
-  Map<String, Object> toJson() => {
+  final String calendarVersion;
+  final String? calendarSourceDigest;
+  Map<String, Object?> toJson() => {
     'amountType': 'simulated_accrual',
     'start': start
         .subtract(Duration(minutes: utcOffsetMinutes))
@@ -80,6 +84,14 @@ class CalculationSegment {
     'workUtcOffsetMinutes': utcOffsetMinutes,
     'salaryRuleId': salaryRuleId,
     'scheduleRuleId': scheduleRuleId,
+    'calendarVersion': calendarVersion,
+    'calendarSourceDigest': calendarSourceDigest,
+    'policyVersion': 'not-applicable-to-simulation',
+    'warnings': [
+      'simulation-only',
+      'fixed-offset-no-DST',
+      if (denominatorMs == 0) 'no-eligible-time',
+    ],
     'formulaId': 'salary.budget.v1',
     'numeratorTimeMs': numeratorMs.toString(),
     'denominatorTimeMs': denominatorMs.toString(),
@@ -110,6 +122,8 @@ class EarningsPolicy {
     Map<String, bool> dateOverrides = const {},
     this.shiftAttribution = ShiftAttribution.calendarDate,
     List<AnchoredWorkSpan> anchoredSpans = const [],
+    this.calendarVersion = 'personal-weekly',
+    this.calendarSourceDigest,
   }) : startDate = DateTime.utc(startDate.year, startDate.month, startDate.day),
        weekdays = Set.unmodifiable(weekdays),
        spans = List.unmodifiable(spans),
@@ -148,6 +162,8 @@ class EarningsPolicy {
   final AccrualMode mode;
   final SalaryBasis basis;
   final int utcOffsetMinutes;
+  final String calendarVersion;
+  final String? calendarSourceDigest;
   final Set<int> weekdays;
   final List<WorkSpan> spans;
   final Map<String, bool> dateOverrides;
@@ -257,6 +273,8 @@ class EarningsEngine {
           numeratorMs: numerator,
           denominatorMs: denominator,
           utcOffsetMinutes: policy.utcOffsetMinutes,
+          calendarVersion: policy.calendarVersion,
+          calendarSourceDigest: policy.calendarSourceDigest,
         ),
       );
       cursor = stop;

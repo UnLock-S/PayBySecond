@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:earnings_core/earnings_core.dart';
 import '../../../application/settings.dart';
 import '../../../infrastructure/policy_repository.dart';
+import '../../../infrastructure/document_integrity.dart';
 import '../../../shared/presentation/design.dart';
 import '../../../shared/presentation/date_time_field.dart';
 import '../../../application/date_time_input.dart';
@@ -326,6 +327,17 @@ class _PolicyPageState extends State<PolicyPage> {
                                     s.copyWith(
                                       policyOverrides: data.workOverrides,
                                       calendarVersion: data.version,
+                                      calendarSource: {
+                                        'version': data.version,
+                                        'revision': data.revision,
+                                        'source': data.source.toJson(),
+                                        'datasetSha256': textDigest(
+                                          canonicalJson(data.toJson()),
+                                        ),
+                                        'personalReviewedAt': DateTime.now()
+                                            .toUtc()
+                                            .toIso8601String(),
+                                      },
                                       effectiveFrom: parseFlexibleDate(
                                         effective.text,
                                       ),

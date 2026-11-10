@@ -40,6 +40,7 @@ class Settings {
     List<WorkInterval> breaks = const [],
     Map<String, bool> policyOverrides = const {},
     this.calendarVersion,
+    Map<String, dynamic> calendarSource = const {},
     this.document,
     this.viewDate,
     this.effectiveFrom,
@@ -51,7 +52,8 @@ class Settings {
        overrides = Map.unmodifiable(overrides),
        policyOverrides = Map.unmodifiable(policyOverrides),
        intervals = List.unmodifiable(intervals),
-       breaks = List.unmodifiable(breaks);
+       breaks = List.unmodifiable(breaks),
+       calendarSource = _freezeMap(calendarSource);
   final String salary;
   final DateTime start;
   final AccrualMode mode;
@@ -64,6 +66,7 @@ class Settings {
   final List<WorkInterval> intervals, breaks;
   final Map<String, bool> policyOverrides;
   final String? calendarVersion;
+  final Map<String, dynamic> calendarSource;
   final ProfileDocument? document;
   final DateTime? viewDate, effectiveFrom;
   final bool migrationPending;
@@ -86,6 +89,7 @@ class Settings {
     List<WorkInterval>? breaks,
     Map<String, bool>? policyOverrides,
     String? calendarVersion,
+    Map<String, dynamic>? calendarSource,
     ProfileDocument? document,
     DateTime? viewDate,
     DateTime? effectiveFrom,
@@ -109,6 +113,7 @@ class Settings {
     breaks: breaks ?? this.breaks,
     policyOverrides: policyOverrides ?? this.policyOverrides,
     calendarVersion: calendarVersion ?? this.calendarVersion,
+    calendarSource: calendarSource ?? this.calendarSource,
     document: document ?? this.document,
     viewDate: viewDate ?? this.viewDate,
     effectiveFrom: effectiveFrom ?? this.effectiveFrom,
@@ -139,6 +144,16 @@ class Settings {
     }
     if (intervals.length > 16 || breaks.length > 16) {
       throw const FormatException('Too many schedule intervals');
+    }
+    if (calendarSource.isNotEmpty) {
+      PolicySource.fromJson(calendarSource['source'] as Map<String, dynamic>);
+      if (calendarSource['version'] != calendarVersion ||
+          !RegExp(
+            r'^[0-9a-f]{64}$',
+          ).hasMatch(calendarSource['datasetSha256'] as String)) {
+        throw const FormatException('Invalid calendar source snapshot');
+      }
+      _utcCreated(calendarSource['personalReviewedAt']);
     }
     final working = intervals.isEmpty
         ? [WorkInterval(startMinute, endMinute)]
@@ -194,6 +209,8 @@ class Settings {
       dateOverrides: {...policyOverrides, ...overrides},
       anchoredSpans: anchored,
       shiftAttribution: shiftAttribution,
+      calendarVersion: calendarVersion ?? 'personal-weekly',
+      calendarSourceDigest: calendarSource['datasetSha256'] as String?,
     );
   }
 
@@ -219,6 +236,7 @@ class Settings {
     if (breaks.isNotEmpty) 'breaks': breaks.map((v) => v.toJson()).toList(),
     if (policyOverrides.isNotEmpty) 'policyOverrides': policyOverrides,
     'calendarVersion': ?calendarVersion,
+    if (calendarSource.isNotEmpty) 'calendarSource': calendarSource,
   };
 
   factory Settings.fromJson(Map<String, dynamic> data) {
@@ -255,6 +273,8 @@ class Settings {
       policyOverrides: (data['policyOverrides'] as Map? ?? {})
           .cast<String, bool>(),
       calendarVersion: data['calendarVersion'] as String?,
+      calendarSource:
+          data['calendarSource'] as Map<String, dynamic>? ?? const {},
     );
     s.toPolicy();
     return s;

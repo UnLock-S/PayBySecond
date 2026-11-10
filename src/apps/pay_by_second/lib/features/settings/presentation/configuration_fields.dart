@@ -186,6 +186,7 @@ class ConfigurationDraft {
         : parseDate(effective.text),
     policyOverrides: original?.policyOverrides ?? const {},
     calendarVersion: original?.calendarVersion,
+    calendarSource: original?.calendarSource ?? const {},
   );
   void dispose() {
     for (final c in [salary, date, start, end, effective]) {

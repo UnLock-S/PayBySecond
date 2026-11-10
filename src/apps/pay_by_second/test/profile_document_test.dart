@@ -1,13 +1,64 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:earnings_core/earnings_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pay_by_second/application/settings.dart';
+import 'package:pay_by_second/infrastructure/document_integrity.dart';
 
 void main() {
   final now = DateTime.utc(2026, 11, 10);
   ProfileDocument profile() => ProfileDocument.initial(
     Settings(salary: '10000', start: DateTime.utc(2024)),
     now,
+  );
+  test(
+    'calendar source snapshot survives history edits and flows into every relevant exact trace',
+    () {
+      final data = CalendarDataset.fromJson(
+        openDocument(
+              File('assets/policy/cn-2026.json').readAsStringSync(),
+            )['payload']
+            as Map<String, dynamic>,
+      );
+      final digest = textDigest(canonicalJson(data.toJson()));
+      final initial = profile();
+      final next = initial.change(
+        initial
+            .view(now)
+            .copyWith(
+              policyOverrides: data.workOverrides,
+              calendarVersion: data.version,
+              calendarSource: {
+                'version': data.version,
+                'source': data.source.toJson(),
+                'datasetSha256': digest,
+                'personalReviewedAt': now.toIso8601String(),
+              },
+              effectiveFrom: DateTime.utc(2026),
+            ),
+        now,
+      );
+      final restored = ProfileDocument.fromJson(
+        jsonDecode(jsonEncode(next.toJson())) as Map<String, dynamic>,
+      );
+      expect(restored.view(now).calendarSource['datasetSha256'], digest);
+      final trace = restored
+          .engine()
+          .traceBetweenCivil(DateTime.utc(2026, 1), DateTime.utc(2026, 2))
+          .single;
+      expect(trace.toJson()['calendarVersion'], data.version);
+      expect(trace.toJson()['calendarSourceDigest'], digest);
+      final payChange = restored.change(
+        restored.view(now).copyWith(salary: '20000'),
+        now,
+      );
+      expect(payChange.view(now).calendarSource['datasetSha256'], digest);
+      expect(
+        () => (payChange.view(now).calendarSource['source'] as Map)['region'] =
+            'JP',
+        throwsUnsupportedError,
+      );
+    },
   );
   test(
     'explicit dated copy can apply the current salary to an earlier interval without changing the schedule',

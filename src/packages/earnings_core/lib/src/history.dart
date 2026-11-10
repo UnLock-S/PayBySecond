@@ -129,6 +129,8 @@ class VersionedEarningsEngine extends EarningsEngine {
           dateOverrides: t.dateOverrides,
           shiftAttribution: t.shiftAttribution,
           anchoredSpans: t.anchoredSpans,
+          calendarVersion: t.calendarVersion,
+          calendarSourceDigest: t.calendarSourceDigest,
         ),
       );
     }
@@ -178,6 +180,8 @@ class VersionedEarningsEngine extends EarningsEngine {
               salaryRuleId: salary.id,
               scheduleRuleId: schedule.id,
               utcOffsetMinutes: part.utcOffsetMinutes,
+              calendarVersion: part.calendarVersion,
+              calendarSourceDigest: part.calendarSourceDigest,
             ),
           );
         }
