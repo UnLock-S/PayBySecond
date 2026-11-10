@@ -18,6 +18,13 @@ Get-ChildItem (Join-Path $root 'src') -Recurse -File | Where-Object { $_.Extensi
             if ($code -ge 128 -and -not $coverage.Contains($code)) { [void]$missing.Add($code) }
         }
     }
+Get-ChildItem (Join-Path $root 'config/policy') -File -Filter '*.json' | ForEach-Object {
+    $text = Get-Content -LiteralPath $_.FullName -Raw -Encoding utf8
+    foreach ($character in $text.ToCharArray()) {
+        $code = [int]$character
+        if ($code -ge 128 -and -not $coverage.Contains($code)) { [void]$missing.Add($code) }
+    }
+}
 if ($missing.Count -gt 0) {
     throw "UI font missing codepoints: $($missing -join ', '). Regenerate with tools/build/subset_font.py."
 }

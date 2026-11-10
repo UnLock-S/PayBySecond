@@ -2,6 +2,8 @@
 
 ## English
 
+Implementation update: the earlier MVP single-rule/storage/overnight boundaries below are superseded for the P0/P1 upgrade by [versioned calculation and recoverable data](../design/versioned-calculation-and-data.md). Requirements and target architecture below remain plans where not explicitly implemented there. Historical test reports retain their original revision scope.
+
 Version 0.1, 2026-11-09. This is the original target design, not an implementation or performance certificate. Later MVP boundaries are defined in ADR-002 and feature design documents. [ADR-001](../architecture/decisions/0001-web-first-flutter.md) supersedes the development order with Web first; APK remains the main delivery target. See [software architecture](../architecture/software-architecture.md) for project boundaries.
 
 ### 1. Product scope
@@ -188,6 +190,8 @@ Original choices included local use, annual/monthly conservation, all-day accrua
 Platform support is documented officially; framework choice, layers and budgets are project judgments, not official guarantees.
 
 ## 中文
+
+实现更新：下文早期 MVP 的单规则、存储及跨夜边界已由 P0/P1 [版本化计算与可恢复数据设计](../design/versioned-calculation-and-data.md)更新；未在其中明确实现的需求和目标架构仍属于计划。历史验证报告保留其原版本范围。
 
 版本：0.1，2026-11-09。性质：开发前设计建议；推荐默认值尚未由用户逐项确认；未进行性能实测或实现。
 

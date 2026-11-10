@@ -7,16 +7,23 @@ abstract interface class Clock {
 }
 
 class EarningsSnapshot {
-  EarningsSnapshot(this.now, this.amounts, this.rate);
+  EarningsSnapshot(
+    this.now,
+    this.amounts,
+    this.rate,
+    this.monthlyMinor,
+    this.hasEligibleTime,
+  );
   final DateTime now;
   final Map<Period, Money> amounts;
   final Money rate;
+  final BigInt monthlyMinor;
+  final bool hasEligibleTime;
 }
 
 /// The historical part is evaluated only on configuration/date changes.
 class IncomeSession {
-  IncomeSession(Settings settings, this.clock)
-    : engine = EarningsEngine(settings.toPolicy());
+  IncomeSession(Settings settings, this.clock) : engine = settings.toEngine();
   final EarningsEngine engine;
   final Clock clock;
   DateTime? _date;
@@ -39,11 +46,17 @@ class IncomeSession {
       }
     }
     final today = engine.betweenCivil(date, civil);
-    return EarningsSnapshot(civil, {
-      for (final period in Period.values)
-        period: period == Period.hour
-            ? engine.earned(period, now)
-            : _baseline[period]! + today,
-    }, engine.ratePerSecond(now));
+    return EarningsSnapshot(
+      civil,
+      {
+        for (final period in Period.values)
+          period: period == Period.hour
+              ? engine.earned(period, now)
+              : _baseline[period]! + today,
+      },
+      engine.ratePerSecond(now),
+      engine.policyAt(now).monthlyMinor,
+      engine.eligibleMilliseconds(now) > 0,
+    );
   }
 }

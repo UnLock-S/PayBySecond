@@ -57,7 +57,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hour => '本小时';
 
   @override
-  String get earned => '累计收入';
+  String get earned => '模拟累计';
 
   @override
   String get hideAmount => '隐藏金额';
@@ -146,7 +146,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get annualHelp => '全年预算为月薪 × 12，单月累计可能与月薪不同。';
 
   @override
-  String get monthlyHelp => '每个完整月的预算等于月薪，每秒速率随月份变化。';
+  String get monthlyHelp => '同一规则覆盖完整月份时使用一份月预算；月中变更时各规则使用完整月份分母。';
 
   @override
   String get budgetBasis => '均摊基准';
@@ -209,7 +209,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get workOnlyNote => '此设置仅在“仅工作时段”模式生效。';
 
   @override
-  String get calendarWarning => '尚未接入官方节假日，未覆盖日期按周排班估算。';
+  String get calendarWarning => '个人覆盖仅影响模拟工作时间，不用于判定法定加班倍数。';
 
   @override
   String get addDate => '添加日期';
@@ -277,13 +277,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get edit => '修改';
 
   @override
-  String get recalculateTitle => '重算历史收入？';
+  String get recalculateTitle => '确认规则变更';
 
   @override
-  String get recalculateBody => '当前只保存一套规则。修改将按新配置重算全部历史，薪资历史版本尚未支持。';
+  String get recalculateBody =>
+      '保存带生效日的规则，之前区间保留原规则。同日修正会归档旧值。提前入职日会延伸初始假设。不同规则各用完整周期分母，合计可能不同于固定薪资预算。';
 
   @override
-  String get confirmSave => '保存并重算';
+  String get confirmSave => '确认变更';
 
   @override
   String get discardTitle => '放弃未保存修改？';
@@ -335,7 +336,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get limitations => '当前范围';
 
   @override
-  String get limitationsBody => '本机体验版。账号、官方节假日日历、薪资历史与跨设备同步尚未接入。';
+  String get limitationsBody => '本地模拟。不提供真实账号、云同步、税务或工资结算、已核实考勤。政策数据须单独核验。';
 
   @override
   String get licenses => '开源许可';
@@ -386,10 +387,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get otThisTime => '本次加班';
 
   @override
-  String get otExpected => '约定加班费估算';
+  String get otExpected => '所选工资估值 · 已知部分小计';
 
   @override
-  String get otLegalReference => '法定参考金额';
+  String get otLegalReference => '法规参考 · 已知部分小计';
 
   @override
   String otJoke(String amount) {
@@ -445,7 +446,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get otCompLeave => '休息日已安排补休';
 
   @override
-  String get otCompHelp => '仅影响休息日法定现金参考金额，设为0；法定节假日仍按3倍。';
+  String get otCompHelp => '休息日已确认合规安排补休：现金参考可能为零，对应工时仍单独记录。';
 
   @override
   String get otBase => '加班计算月工资基数';
@@ -604,4 +605,189 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get updateOpenError => '无法打开浏览器，请复制页面中的发行链接。';
+
+  @override
+  String get effectiveDate => '生效日期';
+
+  @override
+  String get historyTitle => '薪资与排班历史';
+
+  @override
+  String get historyHelp => '首条规则为配置的初始假设，并非核实的工资记录。未来规则按生效日启用；被替换规则保留归档。';
+
+  @override
+  String get attribution => '跨日班次归属';
+
+  @override
+  String get calendarDate => '按日历日（原有规则）';
+
+  @override
+  String get shiftStartDate => '按班次起始日';
+
+  @override
+  String get attributionHelp =>
+      '日历日模式分别应用每天的工作规则；起始日模式将开始当天规则延续至跨日部分。两者均非实际考勤。';
+
+  @override
+  String get workIntervals => '额外工作时段';
+
+  @override
+  String get breakIntervals => '自定义休息时段';
+
+  @override
+  String get addInterval => '添加时段';
+
+  @override
+  String get traceTitle => '计算依据';
+
+  @override
+  String get traceHelp =>
+      '人民币模拟，固定 UTC+08:00。有理数精确计算，仅显示时四舍五入。不是工资单、权益认定或银行入账。';
+
+  @override
+  String get migrationPending => '迁移尚未写入成功，原始数据已保留。请重试后再编辑。';
+
+  @override
+  String get recoveryTitle => '备份与恢复';
+
+  @override
+  String get backupWarning =>
+      '备份包含未加密的财务数据，请妥善保管。SHA-256 只能检测意外损坏，不证明真实性，也不加密。导入与恢复须确认后替换当前配置，保留副本仍可使用。';
+
+  @override
+  String get exportData => '导出备份';
+
+  @override
+  String get importData => '导入备份';
+
+  @override
+  String get restorePrevious => '恢复上次有效配置';
+
+  @override
+  String get restoreLegacy => '恢复旧版配置';
+
+  @override
+  String get operationFailed => '操作失败，未静默清空当前数据。请导出恢复副本或重试。';
+
+  @override
+  String get operationDone => '操作完成';
+
+  @override
+  String get backupJson => '备份 JSON（仅本地）';
+
+  @override
+  String get reviewImport => '预览替换内容';
+
+  @override
+  String get privacyScope => '隐藏首页及明细财务金额；不阻止系统截图，也不加密存储。';
+
+  @override
+  String get moreDetails => '更多明细';
+
+  @override
+  String get copy => '复制 JSON';
+
+  @override
+  String get policyTitle => '日历与政策数据';
+
+  @override
+  String get policyPending => '待人工核验';
+
+  @override
+  String get policyReviewed => '来源已核验';
+
+  @override
+  String get policyHelp =>
+      '仅适用中国大陆。工作安排与法定分类分别管理，缺失分类保持未知。语言不改变适用地区；不自动请求政策或变更薪资。';
+
+  @override
+  String get policyUpdate => '联网检查政策数据';
+
+  @override
+  String get policyNetwork => '从本项目 GitHub 仓库获取公开政策 JSON？不发送薪资或工时数据，缓存可离线使用。';
+
+  @override
+  String get policyRollback => '使用上个缓存版本';
+
+  @override
+  String get policyApply => '应用已核对的工作日假设';
+
+  @override
+  String get policyConfirm => '我已核对官方来源，同意将这些日期作为个人模拟排班；不据此认定法定节日或加班资格。';
+
+  @override
+  String get policyUnknown => '法定分类未知';
+
+  @override
+  String get policySource => '官方来源与版本';
+
+  @override
+  String get personalOverride => '个人工作或休息覆盖';
+
+  @override
+  String get noPolicyYear => '本年缺少已核验日历，仍按周排班和个人覆盖计算。';
+
+  @override
+  String get policyCacheFailed => '更新或缓存读取失败，保留已有数据；必要时使用上个缓存版本。';
+
+  @override
+  String get legalOrdinary => '普通工作日';
+
+  @override
+  String get legalRest => '休息日';
+
+  @override
+  String get legalHoliday => '法定节假日';
+
+  @override
+  String get legalAdjusted => '调休补班日';
+
+  @override
+  String get legalPersonal => '个人休假';
+
+  @override
+  String get legalCompany => '公司休假';
+
+  @override
+  String get otScopeConfirm => '我确认适用中国大陆标准八小时工时制度，并确认独立加班工资基数适用。';
+
+  @override
+  String get otArrangedConfirm => '此次加班由单位安排，且已核对所选日期分类。';
+
+  @override
+  String get otReviewConfirm => '我已核对官方来源及适用条件。这只是本地个人确认，不代表主管机关认定。';
+
+  @override
+  String get otPendingHelp =>
+      '条件未确认或日期分类未知时保留待核验。分类仅适用于确认的 UTC+08:00 日期，跨日部分不猜测。显示现金为已知部分小计，并非最终权益金额。';
+
+  @override
+  String get otPendingTime => '参考待核验工时';
+
+  @override
+  String get otCompTime => '已记录补休工时';
+
+  @override
+  String get otLegacy => '旧版快照：保留未核验的原有假设';
+
+  @override
+  String get otCorrectionRecorded => '结束时间修正已留痕';
+
+  @override
+  String get appearance => '外观';
+
+  @override
+  String get systemTheme => '跟随系统';
+
+  @override
+  String get lightTheme => '浅色';
+
+  @override
+  String get darkTheme => '深色';
+
+  @override
+  String get noEligibleTime => '当前预算周期无有效工作时间';
+
+  @override
+  String get restoreImport => '恢复上次导入前状态';
 }

@@ -5,11 +5,19 @@ import '../../../application/settings.dart';
 import '../../../shared/presentation/design.dart';
 import 'configuration_editor.dart';
 import 'configuration_fields.dart';
+import 'history_page.dart';
+import '../../../shared/presentation/appearance.dart';
+import 'policy_page.dart';
+import '../../../infrastructure/policy_repository.dart';
 
 class SettingsHub extends StatefulWidget {
   const SettingsHub({
     super.key,
     required this.settings,
+    this.getCurrent,
+    this.onRecovery,
+    this.appearance,
+    this.policyRepository,
     this.updates,
     required this.now,
     required this.onSave,
@@ -18,6 +26,10 @@ class SettingsHub extends StatefulWidget {
     required this.languageLoadFailed,
   });
   final Settings settings;
+  final Settings Function()? getCurrent;
+  final Appearance? appearance;
+  final VoidCallback? onRecovery;
+  final PolicyRepository? policyRepository;
   final UpdateController? updates;
   final DateTime now;
   final Future<void> Function(Settings) onSave;
@@ -44,7 +56,9 @@ class _SettingsHubState extends State<SettingsHub> {
         now: widget.now,
         onSave: (s) async {
           await widget.onSave(s);
-          if (mounted) setState(() => _settings = s);
+          if (mounted) {
+            setState(() => _settings = widget.getCurrent?.call() ?? s);
+          }
         },
       ),
     ),
@@ -68,6 +82,20 @@ class _SettingsHubState extends State<SettingsHub> {
                     () => _edit(ConfigSection.salary),
                   ),
                   const Divider(),
+                  if (_settings.document != null) ...[
+                    _item(
+                      Icons.history,
+                      l.historyTitle,
+                      l.effectiveDate,
+                      () => Navigator.of(context).push<void>(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              HistoryPage(document: _settings.document!),
+                        ),
+                      ),
+                    ),
+                    const Divider(),
+                  ],
                   _item(
                     Icons.calculate_outlined,
                     l.calculationSection,
@@ -91,6 +119,34 @@ class _SettingsHubState extends State<SettingsHub> {
                 ],
               ),
             ),
+            if (widget.policyRepository != null) ...[
+              const SizedBox(height: 20),
+              Surface(
+                child: _item(
+                  Icons.calendar_month,
+                  l.policyTitle,
+                  l.policyPending,
+                  () => Navigator.of(context).push<void>(
+                    MaterialPageRoute(
+                      builder: (_) => PolicyPage(
+                        repository: widget.policyRepository!,
+                        getSettings: () =>
+                            widget.getCurrent?.call() ?? _settings,
+                        onSave: (s) async {
+                          await widget.onSave(s);
+                          if (mounted) {
+                            setState(
+                              () => _settings = widget.getCurrent?.call() ?? s,
+                            );
+                          }
+                        },
+                        now: widget.now,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             Surface(
               child: Column(
@@ -102,6 +158,20 @@ class _SettingsHubState extends State<SettingsHub> {
                     () => _edit(ConfigSection.display),
                   ),
                   const Divider(),
+                  if (widget.appearance != null) ...[
+                    _item(
+                      Icons.palette_outlined,
+                      l.appearance,
+                      l.systemTheme,
+                      () => Navigator.of(context).push<void>(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              AppearancePage(appearance: widget.appearance!),
+                        ),
+                      ),
+                    ),
+                    const Divider(),
+                  ],
                   _item(
                     Icons.translate,
                     l.languageSection,
@@ -146,6 +216,17 @@ class _SettingsHubState extends State<SettingsHub> {
                 ),
               ),
             ),
+            if (widget.onRecovery != null) ...[
+              const SizedBox(height: 20),
+              Surface(
+                child: _item(
+                  Icons.restore,
+                  l.recoveryTitle,
+                  l.localOnly,
+                  widget.onRecovery!,
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -236,13 +317,20 @@ class _LanguagePageState extends State<LanguagePage> {
               ),
             ),
             const SizedBox(height: 20),
-            Text(l.languageHelp, style: const TextStyle(color: muted)),
+            Text(
+              l.languageHelp,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
             if (_loadWarning)
               Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: Text(
                   l.languageLoadError,
-                  style: const TextStyle(color: muted),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             if (_failed)
@@ -321,7 +409,7 @@ class _DataPageState extends State<DataPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.shield_outlined, color: accent, size: 32),
+                  Icon(Icons.shield_outlined, color: accent, size: 32),
                   const SizedBox(height: 20),
                   Text(
                     l.localOnly,
@@ -340,7 +428,12 @@ class _DataPageState extends State<DataPage> {
                   const SizedBox(height: 12),
                   Text(l.limitationsBody),
                   const SizedBox(height: 20),
-                  Text(l.currencyNote, style: const TextStyle(color: muted)),
+                  Text(
+                    l.currencyNote,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   OutlinedButton.icon(
                     onPressed: () => Navigator.of(context).push<void>(

@@ -12,6 +12,14 @@ import '../features/dashboard/presentation/dashboard.dart';
 import '../features/settings/presentation/configuration_editor.dart';
 import '../features/settings/presentation/settings_hub.dart';
 import '../shared/presentation/design.dart';
+import '../shared/presentation/financial_privacy.dart';
+import '../shared/presentation/appearance.dart';
+import '../application/key_value_store.dart';
+import '../infrastructure/financial_backup.dart';
+import '../infrastructure/policy_repository.dart';
+import '../infrastructure/recoverable_settings_repository.dart';
+import '../infrastructure/recoverable_overtime_repository.dart';
+import '../features/settings/presentation/recovery_page.dart';
 
 class PayBySecondApp extends StatefulWidget {
   const PayBySecondApp({
@@ -21,12 +29,18 @@ class PayBySecondApp extends StatefulWidget {
     this.languageRepository,
     this.overtimeRepository,
     this.updates,
+    this.backup,
+    this.appearanceStore,
+    this.policyRepository,
   });
   final SettingsRepository repository;
   final Clock clock;
   final LanguageRepository? languageRepository;
   final OvertimeRepository? overtimeRepository;
   final UpdateController? updates;
+  final FinancialBackup? backup;
+  final KeyValueStore? appearanceStore;
+  final PolicyRepository? policyRepository;
   @override
   State<PayBySecondApp> createState() => _PayBySecondAppState();
 }
@@ -34,10 +48,14 @@ class PayBySecondApp extends StatefulWidget {
 class _PayBySecondAppState extends State<PayBySecondApp> {
   late final LanguageRepository _languages;
   String _language = 'zh';
+  final _privacy = ValueNotifier(false);
+  late final Appearance _appearance;
   bool _loading = true, _languageLoadFailed = false;
   @override
   void initState() {
     super.initState();
+    _appearance = Appearance(widget.appearanceStore)
+      ..addListener(_appearanceChanged);
     _languages = widget.languageRepository ?? MemoryLanguageRepository();
     widget.updates?.initialize();
     _loadLanguage();
@@ -46,10 +64,18 @@ class _PayBySecondAppState extends State<PayBySecondApp> {
   @override
   void dispose() {
     widget.updates?.dispose();
+    _privacy.dispose();
+    _appearance.removeListener(_appearanceChanged);
+    _appearance.dispose();
     super.dispose();
   }
 
+  void _appearanceChanged() {
+    if (mounted) setState(() {});
+  }
+
   Future<void> _loadLanguage() async {
+    await _appearance.load();
     try {
       final value = await _languages.load();
       if (!mounted) return;
@@ -85,9 +111,25 @@ class _PayBySecondAppState extends State<PayBySecondApp> {
   Widget build(BuildContext context) => MaterialApp(
     title: 'PayBySecond',
     debugShowCheckedModeBanner: false,
+    builder: (context, child) =>
+        FinancialPrivacy(state: _privacy, child: child!),
     locale: Locale(_language),
     supportedLocales: AppLocalizations.supportedLocales,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
+    themeMode: _appearance.mode,
+    darkTheme: ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      fontFamily: _language == 'ja' ? 'PayBySecondJP' : 'PayBySecondSC',
+      fontFamilyFallback: const ['PayBySecondSC'],
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: accent,
+        brightness: Brightness.dark,
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+      ),
+    ),
     theme: ThemeData(
       useMaterial3: true,
       fontFamily: _language == 'ja' ? 'PayBySecondJP' : 'PayBySecondSC',
@@ -121,6 +163,9 @@ class _PayBySecondAppState extends State<PayBySecondApp> {
         ? const Scaffold(body: Center(child: CircularProgressIndicator()))
         : _Home(
             overtimeRepository: widget.overtimeRepository,
+            backup: widget.backup,
+            appearance: _appearance,
+            policyRepository: widget.policyRepository,
             updates: widget.updates,
             repository: widget.repository,
             clock: widget.clock,
@@ -136,12 +181,18 @@ class _Home extends StatefulWidget {
     required this.clock,
     this.overtimeRepository,
     this.updates,
+    this.backup,
+    this.policyRepository,
+    required this.appearance,
     required this.onLanguageChanged,
     required this.languageLoadFailed,
   });
+  final Appearance appearance;
   final SettingsRepository repository;
   final OvertimeRepository? overtimeRepository;
   final UpdateController? updates;
+  final FinancialBackup? backup;
+  final PolicyRepository? policyRepository;
   final Clock clock;
   final Future<void> Function(String) onLanguageChanged;
   final bool languageLoadFailed;
@@ -160,8 +211,43 @@ class _HomeState extends State<_Home> {
       widget.overtimeRepository ?? MemoryOvertimeRepository(),
     );
     _overtime.addListener(_overtimeChanged);
-    _overtime.load();
-    _load();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    try {
+      await widget.backup?.recoverInterruptedImport();
+      await _overtime.load();
+      await _load();
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _loadFailed = true;
+        });
+      }
+    }
+  }
+
+  void _recovery() {
+    final repository = widget.repository;
+    if (repository is RecoverableSettingsRepository && widget.backup != null) {
+      final page = RecoveryPage(
+        repository: repository,
+        backup: widget.backup!,
+        onReload: () async {
+          await _initialize();
+          if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
+        },
+      );
+      if (_away) {
+        Navigator.of(
+          context,
+        ).push<void>(MaterialPageRoute(builder: (_) => page));
+      } else {
+        _navigate(page);
+      }
+    }
   }
 
   void _overtimeChanged() {
@@ -181,7 +267,10 @@ class _HomeState extends State<_Home> {
       await _navigate(
         OvertimeSettingsPage(
           controller: _overtime,
-          monthlyMinor: _settings!.toPolicy().monthlyMinor,
+          monthlyMinor: _settings!
+              .toEngine()
+              .policyAt(widget.clock.now())
+              .monthlyMinor,
           startAt: widget.clock.now,
         ),
       );
@@ -224,9 +313,13 @@ class _HomeState extends State<_Home> {
 
   Future<void> _save(Settings s) async {
     await widget.repository.save(s);
+    final persisted = await widget.repository.load();
+    if (persisted == null) {
+      throw StateError('Saved profile could not be restored');
+    }
     if (mounted) {
       setState(() {
-        _settings = s;
+        _settings = persisted;
         _loadFailed = false;
       });
     }
@@ -246,7 +339,15 @@ class _HomeState extends State<_Home> {
       _navigate(ConfigurationEditor(now: widget.clock.now(), onSave: _save));
   void _settingsPage() => _navigate(
     SettingsHub(
-      settings: _settings!,
+      settings:
+          _settings!.document?.view(
+            widget.clock.now().toUtc().add(const Duration(hours: 8)),
+          ) ??
+          _settings!,
+      getCurrent: () => _settings!,
+      policyRepository: widget.policyRepository,
+      appearance: widget.appearance,
+      onRecovery: widget.backup == null ? null : _recovery,
       updates: widget.updates,
       now: widget.clock.now(),
       onSave: _save,
@@ -256,9 +357,15 @@ class _HomeState extends State<_Home> {
         if (_overtime.busy || _overtime.loading) {
           throw StateError('Operation in progress');
         }
-        await _overtime.repository.save(OvertimeBook());
+        final repository = _overtime.repository;
+        if (repository is RecoverableOvertimeRepository) {
+          await repository.clear();
+        } else {
+          await repository.save(OvertimeBook());
+        }
         await _overtime.load();
         await widget.repository.clear();
+        await widget.backup?.clearRecoveryCopies();
         if (mounted) setState(() => _settings = null);
       },
     ),
@@ -287,9 +394,28 @@ class _HomeState extends State<_Home> {
         actions: [
           if (_settings != null)
             IconButton(
+              key: const Key('quick-overtime-toggle'),
+              tooltip: l.otTitle,
+              onPressed:
+                  _away ||
+                      _overtime.busy ||
+                      _overtime.loading ||
+                      _overtime.failed
+                  ? null
+                  : _toggleOvertime,
+              icon: Icon(
+                _overtime.book.active == null
+                    ? Icons.more_time
+                    : Icons.stop_circle_outlined,
+              ),
+            ),
+          if (_settings != null)
+            IconButton(
               key: const Key('open-settings'),
               tooltip: l.settings,
-              onPressed: _away ? null : _settingsPage,
+              onPressed: _away || (_settings?.migrationPending ?? false)
+                  ? null
+                  : _settingsPage,
               icon: const Icon(Icons.tune_rounded),
             )
           else
@@ -352,17 +478,20 @@ class _HomeState extends State<_Home> {
               ),
             Text(
               l.headline,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 30,
                 height: 1.25,
                 fontWeight: FontWeight.w700,
-                color: ink,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               l.subtitle,
-              style: const TextStyle(fontSize: 15, color: muted),
+              style: TextStyle(
+                fontSize: 15,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 32),
             if (_loadFailed) ...[
@@ -372,10 +501,21 @@ class _HomeState extends State<_Home> {
                   children: [
                     Text(l.loadError),
                     TextButton(onPressed: _load, child: Text(l.retry)),
+                    if (widget.backup != null)
+                      TextButton(
+                        onPressed: _recovery,
+                        child: Text(l.recoveryTitle),
+                      ),
                   ],
                 ),
               ),
               const SizedBox(height: 20),
+            ],
+            if (_settings?.migrationPending ?? false) ...[
+              Text(l.migrationPending),
+              TextButton(onPressed: _load, child: Text(l.retry)),
+              if (widget.backup != null)
+                TextButton(onPressed: _recovery, child: Text(l.recoveryTitle)),
             ],
             if (_loading)
               const Center(child: CircularProgressIndicator())
@@ -385,7 +525,7 @@ class _HomeState extends State<_Home> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 12),
-                    const Icon(Icons.savings_outlined, size: 44, color: accent),
+                    Icon(Icons.savings_outlined, size: 44, color: accent),
                     const SizedBox(height: 28),
                     Text(
                       l.welcomeTitle,
@@ -395,12 +535,17 @@ class _HomeState extends State<_Home> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Text(l.welcomeBody, style: const TextStyle(color: muted)),
+                    Text(
+                      l.welcomeBody,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                     const SizedBox(height: 28),
                     FilledButton.icon(
                       key: const Key('get-started'),
-                      onPressed: _away ? null : _setup,
-                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: _away || _loadFailed ? null : _setup,
+                      icon: Icon(Icons.arrow_forward),
                       label: Text(l.getStarted),
                     ),
                     const SizedBox(height: 12),
@@ -424,7 +569,10 @@ class _HomeState extends State<_Home> {
                       OvertimeDetailsPage(
                         controller: _overtime,
                         clock: widget.clock,
-                        monthlyMinor: _settings!.toPolicy().monthlyMinor,
+                        monthlyMinor: _settings!
+                            .toEngine()
+                            .policyAt(widget.clock.now())
+                            .monthlyMinor,
                       ),
                     ),
                   ),
@@ -434,12 +582,19 @@ class _HomeState extends State<_Home> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.shield_outlined, color: muted, size: 16),
+                Icon(
+                  Icons.shield_outlined,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  size: 16,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     '${l.localOnly} · ${l.estimateNote}',
-                    style: const TextStyle(color: muted, fontSize: 12),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],

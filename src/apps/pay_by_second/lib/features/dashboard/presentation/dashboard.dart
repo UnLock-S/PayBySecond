@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../application/income_session.dart';
 import '../../../application/settings.dart';
 import '../../../shared/presentation/design.dart';
+import '../../../shared/presentation/financial_privacy.dart';
+import 'trace_page.dart';
 
 String periodLabel(Period period, AppLocalizations l) => switch (period) {
   Period.employment => l.employment,
@@ -37,9 +39,10 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   late final ValueNotifier<EarningsSnapshot> _snapshot;
   Timer? _timer;
   Period _period = Period.day;
-  bool _hidden = false;
+  bool _hidden = false, _detailAway = false;
   bool get _active =>
       widget.enabled &&
+      !_detailAway &&
       (WidgetsBinding.instance.lifecycleState == null ||
           WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed);
   @override
@@ -97,6 +100,8 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final l = context.l;
+    final privacy = FinancialPrivacy.of(context);
+    _hidden = privacy?.value ?? _hidden;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -139,7 +144,10 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                     child: IconButton(
                       key: ValueKey(_hidden),
                       tooltip: _hidden ? l.showAmount : l.hideAmount,
-                      onPressed: () => setState(() => _hidden = !_hidden),
+                      onPressed: () => setState(() {
+                        _hidden = !_hidden;
+                        if (privacy != null) privacy.value = _hidden;
+                      }),
                       icon: Icon(
                         _hidden
                             ? Icons.visibility_off_outlined
@@ -199,9 +207,10 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                           child: Text(
                             snap.now.isBefore(widget.settings.start)
                                 ? l.notStarted
-                                : _session.engine.policy.monthlyMinor ==
-                                      BigInt.zero
+                                : snap.monthlyMinor == BigInt.zero
                                 ? l.zeroSalary
+                                : !snap.hasEligibleTime
+                                ? l.noEligibleTime
                                 : snap.rate.numerator > BigInt.zero
                                 ? l.accruing
                                 : l.resting,
@@ -250,49 +259,81 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
             ],
           ),
         ),
-        const SizedBox(height: 20),
-        ValueListenableBuilder<EarningsSnapshot>(
-          valueListenable: _snapshot,
-          builder: (context, snap, _) => Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (final p in [Period.month, Period.employment]) ...[
-                if (p == Period.employment) const SizedBox(width: 14),
-                Expanded(
-                  child: Surface(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          periodLabel(p, l),
-                          style: const TextStyle(color: muted),
-                        ),
-                        const SizedBox(height: 14),
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            _hidden
-                                ? '••••••'
-                                : grouped(
-                                    snap.amounts[p]!.format(
-                                      widget.settings.digits,
-                                    ),
-                                  ),
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                              fontFeatures: [FontFeature.tabularFigures()],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+        const SizedBox(height: 16),
+        TextButton.icon(
+          key: const Key('calculation-details'),
+          icon: const Icon(Icons.receipt_long_outlined),
+          label: Text(l.traceTitle),
+          onPressed: () async {
+            _detailAway = true;
+            _timer?.cancel();
+            await Navigator.of(context).push<void>(
+              MaterialPageRoute(
+                builder: (_) => TracePage(
+                  settings: widget.settings,
+                  now: widget.clock.now(),
+                  period: _period,
                 ),
-              ],
-            ],
-          ),
+              ),
+            );
+            _detailAway = false;
+            if (mounted) {
+              _snapshot.value = _session.snapshot();
+              _schedule();
+            }
+          },
+        ),
+        ExpansionTile(
+          title: Text(l.moreDetails),
+          children: [
+            ValueListenableBuilder<EarningsSnapshot>(
+              valueListenable: _snapshot,
+              builder: (context, snap, _) => Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (final p in [Period.month, Period.employment]) ...[
+                    if (p == Period.employment) const SizedBox(width: 14),
+                    Expanded(
+                      child: Surface(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              periodLabel(p, l),
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                _hidden
+                                    ? '••••••'
+                                    : grouped(
+                                        snap.amounts[p]!.format(
+                                          widget.settings.digits,
+                                        ),
+                                      ),
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                  fontFeatures: [FontFeature.tabularFigures()],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
         ),
         if (widget.overtimeBuilder != null)
           ValueListenableBuilder<EarningsSnapshot>(

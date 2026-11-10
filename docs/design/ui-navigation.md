@@ -2,6 +2,8 @@
 
 ## English
 
+Implementation update: the earlier MVP single-rule/storage/overnight boundaries below are superseded for the P0/P1 upgrade by [versioned calculation and recoverable data](versioned-calculation-and-data.md). Requirements and target architecture below remain plans where not explicitly implemented there. Historical test reports retain their original revision scope.
+
 Implemented navigation, updated through 0.2.1. Historical qualification results remain in the testing documents.
 
 ### Page responsibilities
@@ -61,6 +63,8 @@ LanguageRepository stores pay_by_second.language.v1 independently. Salary profil
 intl/web were promoted from existing transitives without new versions. No online translation, commercial UI or tracker. The updater adds ordinary INTERNET permission; it does not request sensitive runtime permissions. Flexible text/wheels and overtime: [feature design](overtime-and-input.md).
 
 ## 中文
+
+实现更新：下文早期 MVP 的单规则、存储及跨夜边界已由 P0/P1 [版本化计算与可恢复数据设计](versioned-calculation-and-data.md)更新；未在其中明确实现的需求和目标架构仍属于计划。历史验证报告保留其原版本范围。
 
 状态：已实现的 Web UI 结构。2026-11-09。
 
