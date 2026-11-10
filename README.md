@@ -6,11 +6,11 @@
 
 PayBySecond is a live income estimator: validate on Flutter Web first, deliver Android APK from the same client, then extend to Windows/Linux/macOS.
 
-Repository: [UnLock-S/PayBySecond](https://github.com/UnLock-S/PayBySecond). Development continues directly on main. Project-owned code has no selected overall license; public visibility does not change third-party terms or assign an MIT/Apache license.
+Repository: [UnLock-S/PayBySecond](https://github.com/UnLock-S/PayBySecond). This upgrade uses a feature branch and reviewed PR; main remains admin-only. Project-owned code has no selected overall license; public visibility does not change third-party terms or assign an MIT/Apache license.
 
 ### Current functionality
 
-Exact pure-Dart salary calculations, multipage configuration, live dashboard, local persistence, lifecycle-aware refresh, flexible text/wheel input, independent overtime ledger and GitHub Release checking. The Android source is included and local test APKs can be built. Real accounts, official holiday calendars, salary history and synchronization remain unimplemented; desktop platform projects are not yet generated.
+Exact pure-Dart salary calculations, multipage configuration, live dashboard, local persistence, lifecycle-aware refresh, flexible text/wheel input, independent overtime ledger and GitHub Release checking. The Android source is included and local test APKs can be built. Dated salary/schedule history, recoverable v2 storage, plaintext JSON backups, calculation explanations, selectable overnight attribution and calendar/policy review are implemented. The bundled 2026 arrangements remain pending human verification; missing legal day classifications remain unknown. Accounts, synchronization, payroll/tax settlement and desktop platform projects remain unimplemented.
 
 UI languages: Chinese, English, Japanese, persisted locally. First use has a language action; after configuration use Settings → Language. A successful change returns home automatically. Language changes display only: currency remains CNY and work zone UTC+08:00. Japanese uses a local JP font and natural kanji vocabulary.
 
@@ -21,7 +21,9 @@ UI languages: Chinese, English, Japanese, persisted locally. First use has a lan
 - Settings: salary, calculation, work schedule, date overrides, display, language, software update, data/information.
 - Text/wheels: dates such as 20261109 or 2026/11/9; times 1/01 both mean 01:00, 805/8:5 mean08:05. Invalid calendar dates/times are rejected.
 - Overtime: unpaid, statutory reference, 1× or custom multiplier; independently stored snapshots/history, end correction and totals; unpaid humor represents time value, not salary deduction.
-- Wage-rule changes require confirmation before recalculating history; unsaved configuration can be discarded explicitly.
+- Wage-rule changes have an effective date and preview; older intervals retain their rules and same-date corrections are archived. Unsaved configuration can be discarded explicitly.
+- Separate history, month calendar/policy source, appearance and backup/recovery pages. Light/dark/system themes and session-wide financial display privacy.
+- See [versioned calculation and data design](docs/design/versioned-calculation-and-data.md) for formulas, limits, source provenance and recovery boundaries.
 
 ### Run/check
 
@@ -35,7 +37,7 @@ Install the Flutter version pinned in .flutter-version and run PowerShell 7 at t
 
 The local URL is http://127.0.0.1:7357. Scripts store machine SDK locations only in ignored .local/ and do not edit global PATH. tools/build/web.ps1 archives Release output in out/web/. Serve through HTTP/HTTPS; do not open index.html as a local file.
 
-Salary/calculation/schedule/override edits explicitly recalculate past estimates; only one salary rule set is stored. Local finance is not encrypted and browser cleanup can erase it. Do not treat the preview as payroll settlement or a sole backup.
+Salary and schedule changes use dated rules and full-period denominators; they are mathematical simulation, not verified pay history. Local finance and exported JSON are not encrypted and browser cleanup can erase storage. Keep a private backup. Policy requests require an explicit user gesture and never upload financial data.
 
 ### GitHub updates
 
@@ -85,7 +87,7 @@ Do not create placeholder files for every planned empty directory. Prefer built-
 
 仓库：[UnLock-S/PayBySecond](https://github.com/UnLock-S/PayBySecond)。当前直接维护 `main`。
 
-当前为 Web 本机体验版：已实现独立工资计算包、薪资配置、实时面板、本地保存及生命周期刷新。真实账号、官方节假日日历和薪资历史尚未接入；Android 已通过本机隔离平台工程生成测试 APK，平台源码保留在src，构建产物和本机配置不提交。
+当前为 Web 本机体验版：已实现独立工资计算包、薪资配置、实时面板、本地保存及生命周期刷新。已加入带生效日的薪资/排班历史、可恢复 v2 数据、明文 JSON 备份、计算依据、可选跨日归属和日历/政策核验；内置 2026 安排仍待人工核验，未确认法定分类保持未知。真实账号、同步、工资结算及税费未实现；Android 已通过本机隔离平台工程生成测试 APK，平台源码保留在src，构建产物和本机配置不提交。
 
 界面支持中文、English、日本語，语言偏好保存到本机。首次打开可通过右上角语言图标选择语言，已有配置后通过“设置 → 语言”切换。
 
@@ -96,7 +98,7 @@ Do not create placeholder files for every planned empty directory. Prefer built-
 - 分类设置：薪资信息、计算方式、工作时间、休假与补班、显示偏好、语言、数据与说明。
 - 日期/时间支持滚轮与灵活文本输入，例如20261109、2026/11/9、8、08、8:5；休假日期也复用此能力。
 - 语言保存成功自动返回首页；加班通过独立页面配置无薪、法定参考、1倍或自定义倍数，保存本地记录并单独统计。
-- 离开配置页时可放弃未保存修改；涉及收入规则的保存仍需确认重算历史。
+- 离开配置页时可放弃未保存修改；涉及收入规则的保存须选择生效日并预览确认；旧区间保留规则，同日修正归档。
 
 语言只改变界面，币种仍为人民币 CNY，时区仍固定 UTC+08:00。日语使用独立的本地 JP 字体子集，文案优先采用自然、简洁的汉字词。
 
@@ -112,7 +114,7 @@ Do not create placeholder files for every planned empty directory. Prefer built-
 
 运行地址为 `http://127.0.0.1:7357`。脚本只记录本机 SDK 路径到被忽略的 `.local/`，不修改全局 PATH。`./tools/build/web.ps1` 构建 Release 并归档至 `out/web/`，部署时需提供 HTTP/HTTPS 静态服务，不能直接双击 index.html。
 
-修改薪资、计算方式、排班或日期例外会显式提示重算全部历史。数据只保存在本机且未加密；浏览器清理存储后可能丢失。不要将体验版当作实际工资结算或唯一数据记录。
+薪资与排班使用带生效日的历史规则及完整周期分母，属于数学模拟，不是核实的工资历史。数据及导出 JSON 未加密，浏览器清理仍可能导致丢失，请另存私有备份。政策请求须用户主动触发，不上传财务数据。
 
 ### 阅读入口
 
@@ -159,4 +161,4 @@ Android启动时最多每24小时检查一次，可在“软件更新”关闭�
 
 更新源为config/app/updates.json；公开仓库仍需发布稳定Release并上传对应APK。尚无Release时提示尚无公开发行版，不误报最新版。构建不会自动发布制品。见 [更新设计](docs/design/github-updates.md) 与 [验证记录](docs/testing/github-updates-validation.md)。
 
-按所有者选择保留历史作者信息；新提交使用公开noreply身份。公开仓库不自动赋予项目自有代码MIT/Apache等许可证。未接入真实账号、官方日历、薪资历史或同步，桌面平台工程仍待生成。
+按所有者选择保留历史作者信息；新提交使用公开noreply身份。公开仓库不自动赋予项目自有代码MIT/Apache等许可证。未接入真实账号、同步或税费结算；薪资/排班历史已版本化，2026 日历候选待人工核验，桌面平台工程仍待生成。详见[版本化设计](docs/design/versioned-calculation-and-data.md)。

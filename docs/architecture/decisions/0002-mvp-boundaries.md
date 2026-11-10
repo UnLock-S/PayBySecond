@@ -2,6 +2,8 @@
 
 ## English
 
+Implementation update: the earlier MVP single-rule/storage/overnight boundaries below are superseded for the P0/P1 upgrade by [versioned calculation and recoverable data](../../design/versioned-calculation-and-data.md). Requirements and target architecture below remain plans where not explicitly implemented there. Historical test reports retain their original revision scope.
+
 Date: 2026-11-09. Implementation decision; the full requirements remain future scope.
 
 ### Decision
@@ -23,6 +25,8 @@ Re-evaluate from wall time rather than tick accumulation; no tamper-proof-clock 
 Later overtime/update features are documented separately and do not silently expand these original qualification claims.
 
 ## 中文
+
+实现更新：下文早期 MVP 的单规则、存储及跨夜边界已由 P0/P1 [版本化计算与可恢复数据设计](../../design/versioned-calculation-and-data.md)更新；未在其中明确实现的需求和目标架构仍属于计划。历史验证报告保留其原版本范围。
 
 日期：2026-11-09。状态：实施决定，完整需求仍保留后续范围。
 

@@ -112,7 +112,7 @@ void main() {
     await tap(tester, find.byTooltip('修改'));
     await tap(tester, find.text('上班'));
     await tap(tester, find.byKey(const Key('config-submit')));
-    await tap(tester, find.text('保存并重算'));
+    await tap(tester, find.text('确认变更'));
     expect(repo.value!.overrides, {'2026-01-01': true});
     expect(repo.value!.salary, '10000');
     await tester.pumpWidget(const SizedBox());
@@ -181,8 +181,8 @@ void main() {
       await tester.enterText(find.byKey(const Key('salary-input')), '20000');
       await tap(tester, find.byKey(const Key('config-submit')));
       expect(repo.writes, 0);
-      expect(find.text('重算历史收入？'), findsOneWidget);
-      await tap(tester, find.text('保存并重算'));
+      expect(find.text('确认规则变更'), findsOneWidget);
+      await tap(tester, find.text('确认变更'));
       expect(repo.value!.salary, '20000');
       expect(repo.writes, 1);
       await tester.pumpWidget(const SizedBox());

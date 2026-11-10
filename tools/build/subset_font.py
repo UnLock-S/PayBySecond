@@ -26,6 +26,9 @@ def required_characters():
         if any(part in {".dart_tool", "build"} for part in path.parts):
             continue
         chars.update(ord(c) for c in path.read_text(encoding="utf-8") if ord(c) >= 128)
+    # Versioned offline policy metadata is visible UI, including document IDs.
+    for path in (ROOT / "config/policy").glob("*.json"):
+        chars.update(ord(c) for c in path.read_text(encoding="utf-8") if ord(c) >= 128)
     return chars
 
 

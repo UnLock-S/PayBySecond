@@ -2,6 +2,8 @@
 
 ## English
 
+Implementation update: the earlier MVP single-rule/storage/overnight boundaries below are superseded for the P0/P1 upgrade by [versioned calculation and recoverable data](../design/versioned-calculation-and-data.md). Requirements and target architecture below remain plans where not explicitly implemented there. Historical test reports retain their original revision scope.
+
 Target baseline v0.1, 2026-11-09, with notes through 0.2.1. The target tree is a plan; it does not claim every proposed module exists.
 
 ### 1. Goals
@@ -169,6 +171,8 @@ Settings now use categories/onboarding and a language repository; see [navigatio
 Version 0.2.1 adds independent updater models/preferences/HTTP and a small Android MethodChannel for installed version/browser opening; it never accesses salary/overtime repositories. Native source now lives in android/. SDK paths, keys, build copies and APKs remain ignored. Real-device memory/energy/installation are not qualified.
 
 ## 中文
+
+实现更新：下文早期 MVP 的单规则、存储及跨夜边界已由 P0/P1 [版本化计算与可恢复数据设计](../design/versioned-calculation-and-data.md)更新；未在其中明确实现的需求和目标架构仍属于计划。历史验证报告保留其原版本范围。
 
 状态：设计基线草案 v0.1；2026-11-09。本文是目标结构，不表示树中的所有文件已经生成。
 

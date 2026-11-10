@@ -71,14 +71,14 @@ class OvertimeBook {
     entries: entries.where((e) => e.id != id).toList(),
   );
   Map<String, dynamic> toJson() => {
-    'version': 1,
+    'version': 2,
     'policy': policy?.toJson(),
     'active': active?.toJson(),
     'entries': entries.map((e) => e.toJson()).toList(),
     'nextId': nextId,
   };
   factory OvertimeBook.fromJson(Map<String, dynamic> json) {
-    if (json['version'] != 1) {
+    if (json['version'] != 1 && json['version'] != 2) {
       throw FormatException('Unsupported overtime data');
     }
     return OvertimeBook(
@@ -126,21 +126,28 @@ class OvertimeController extends ChangeNotifier {
 
   OvertimeBook book = OvertimeBook();
   bool loading = true, failed = false, busy = false;
-  Duration closedDuration = Duration.zero;
+  Duration closedDuration = Duration.zero,
+      closedPending = Duration.zero,
+      closedCompensatory = Duration.zero;
   Money closedExpected = Money.zero,
       closedStatutory = Money.zero,
       closedUnpaid = Money.zero;
   void _assign(OvertimeBook value) {
     book = value;
     closedDuration = Duration.zero;
+    closedPending = Duration.zero;
+    closedCompensatory = Duration.zero;
     closedExpected = Money.zero;
     closedStatutory = Money.zero;
     closedUnpaid = Money.zero;
     for (final e in book.entries) {
       final duration = e.elapsed(e.end!);
       closedDuration += duration;
-      closedExpected += e.policy.expected(duration);
-      closedStatutory += e.policy.statutory(duration);
+      closedExpected += e.expectedAt(e.end!);
+      final reference = e.reference(e.end!);
+      closedStatutory += reference.knownCash;
+      closedPending += reference.pendingDuration;
+      closedCompensatory += reference.compensatoryDuration;
       closedUnpaid += e.policy.unpaidValue(duration);
     }
   }

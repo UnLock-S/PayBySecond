@@ -65,6 +65,14 @@ Status: PASS for audit completion, not product completion. Browser rerun passed 
 
 The three reproduced regressions are now fixed: persisted employment dates require canonical valid calendar dates; overtime constructors reject dates their reader cannot restore; core queries reject exclusive ends after 2101-01-01. Standard checks pass with 13 core + 62 app tests, including all 24 new layouts and five audit probes. This closes the reproduced boundary defects only; history/migration/policy/UI work continues.
 
+### P0-B and P1 implementation checkpoint
+
+The integrated checker now passes 25 core and 158 application tests, including 72 new page combinations (three locales, six viewports, 100%/200% text, light/dark) and the retained baseline layout matrix. It also passes formatting, fatal-info analysis, font and bilingual documentation checks. New page tests cover history, traces, calendar/policy, backup/recovery and appearance; this is not a physical screen-reader/device test. An initial calendar cell overflow at 320 px/200% was reproduced and corrected with a horizontally scrollable minimum-width grid. A test asset-wait timeout was isolated from product rendering and replaced with an injected fixture loader; the actual bundled asset remains subject to browser verification.
+
+History, independent salary/schedule effective rules, selected overnight attribution, merged work/break intervals and exact calculation traces are implemented. Profile and overtime copy-on-write migration retain v1 originals, detect legacy edits and reject stale writes. Fault injection proves retry, corrupted-value failure, pre-import journal rollback, retained pre-import state and checksum/schema rejection. New overtime estimates retain unknown cross-day time as pending and separate compensatory time. Local user review is recorded, never fabricated as a project/government approval. The new reference date test exposed device-local parsing in the newly added code; normalized UTC civil parsing fixed it before release. Existing legacy snapshots keep their arithmetic.
+
+See [implemented design and limits](../design/versioned-calculation-and-data.md). The bundled 2026 source is pending human verification and not an automatic statutory-holiday classifier. Software release and policy updates are independent. The owner subsequently authorized PR merge and a new release; this replaces the earlier no-merge/no-release scope, without authorizing force push or protection changes. Browser/native package validation and final measured coverage are still pending at this checkpoint; P2 remains deferred.
+
 ## 中文
 
 ### 范围与基线
@@ -129,3 +137,11 @@ P0-A在实测、分类及浏览器重跑登记后完成，不宣称三个反例�
 ### P0-B边界修复切片
 
 三处反例已修复：存储入职日须为规范且真实的日期；加班构造器拒绝读回时无法恢复的年份；核心拒绝超过2101-01-01排他边界的查询。标准检查现为13项核心＋62项应用通过，包含24项布局及5项审计探针。仅关闭已复现边界缺陷，版本、迁移、政策和UI仍继续。
+
+### P0-B 与 P1 实现检查点
+
+集成检查现为 25 项核心、158 项应用测试通过，包含新增页面 72 组（三语、六种视口、100%/200% 文字、明暗主题）及原首页布局矩阵；格式、严格静态分析、字体和双语文档检查通过。新增页面包括历史、计算依据、日历/政策、备份恢复及外观，不代表物理读屏或真机测试。首次发现 320 宽度/200% 日历单元溢出，已改为可横向滚动的最小宽度网格；测试资源等待超时已与产品渲染区分，改为注入测试资源，真实内置资源仍交浏览器验证。
+
+已实现独立薪资/排班生效历史、可选跨日归属、多工作/休息时段合并及精确追溯。档案、加班写时复制迁移保留 v1 原文，检测旧版改写并拒绝过期写入。故障注入覆盖重试、损坏失败关闭、导入预写日志回滚、导入前状态保留及摘要/结构拒绝。新加班记录将未知跨日工时保留待核验，补休单列。本地用户核验真实记录，不冒充项目或政府批准。新增日期用例暴露新代码中设备本地日期解析问题，已在发布前修正为 UTC 民用组件；原快照算法保留。
+
+详见[实现设计与边界](../design/versioned-calculation-and-data.md)。内置 2026 来源待人工核验，不自动认定法定节日；软件与政策更新独立。所有者后续已授权主动合入 PR 并发布新 Release，替代此前禁止合入/发布的范围，但不授权强推或改变保护。本检查点的浏览器、原生包和最终覆盖率仍待验证，P2 继续后置。

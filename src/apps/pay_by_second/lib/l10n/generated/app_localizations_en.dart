@@ -58,7 +58,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hour => 'This hour';
 
   @override
-  String get earned => 'Earned so far';
+  String get earned => 'Simulated accrual';
 
   @override
   String get hideAmount => 'Hide amounts';
@@ -149,7 +149,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthlyHelp =>
-      'Each complete month earns the monthly salary. The per-second rate varies by month.';
+      'A complete month under one unchanged rule uses one monthly budget. Mid-month rule changes use each rule’s full-month denominator.';
 
   @override
   String get budgetBasis => 'Budget basis';
@@ -215,7 +215,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calendarWarning =>
-      'Official holiday calendars are not connected. Other dates follow your weekly schedule.';
+      'Personal overrides affect simulation work time only. They never determine a statutory overtime multiplier.';
 
   @override
   String get addDate => 'Add a date';
@@ -286,14 +286,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get edit => 'Edit';
 
   @override
-  String get recalculateTitle => 'Recalculate past income?';
+  String get recalculateTitle => 'Review rule change';
 
   @override
   String get recalculateBody =>
-      'Only one rule set is stored. Saving will recalculate all past estimates. Salary history is not supported yet.';
+      'Save a dated rule. Earlier intervals retain their rules. A same-date correction archives the replaced value. Moving employment earlier extends the initial baseline assumption. Different rules use their own complete-period denominator; totals may differ from a fixed salary budget.';
 
   @override
-  String get confirmSave => 'Save & recalculate';
+  String get confirmSave => 'Confirm change';
 
   @override
   String get discardTitle => 'Discard unsaved changes?';
@@ -352,7 +352,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get limitationsBody =>
-      'Local preview. Accounts, official holiday calendars, salary history and sync are not connected yet.';
+      'Local simulation. Real accounts, cloud sync, tax/payroll settlement and verified attendance are not provided. Policy data must be reviewed separately.';
 
   @override
   String get licenses => 'Open-source licenses';
@@ -407,10 +407,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otThisTime => 'This session';
 
   @override
-  String get otExpected => 'Expected overtime pay';
+  String get otExpected => 'Selected pay estimate · known subtotal';
 
   @override
-  String get otLegalReference => 'Statutory reference';
+  String get otLegalReference => 'Statutory reference · known subtotal';
 
   @override
   String otJoke(String amount) {
@@ -469,7 +469,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otCompHelp =>
-      'Rest-day statutory cash reference becomes zero; statutory holidays remain 3×.';
+      'Confirmed compliant compensatory leave on a rest day: cash reference may be zero; the corresponding time remains separately recorded.';
 
   @override
   String get otBase => 'Monthly overtime wage base';
@@ -644,4 +644,200 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get updateOpenError =>
       'Could not open a browser. Copy the release URL shown on this page.';
+
+  @override
+  String get effectiveDate => 'Effective date';
+
+  @override
+  String get historyTitle => 'Salary and schedule history';
+
+  @override
+  String get historyHelp =>
+      'The first rule is your configured baseline, not a verified pay record. Future rules activate on their effective date. Replaced rules remain archived.';
+
+  @override
+  String get attribution => 'Overnight attribution';
+
+  @override
+  String get calendarDate => 'Calendar date (legacy)';
+
+  @override
+  String get shiftStartDate => 'Shift start date';
+
+  @override
+  String get attributionHelp =>
+      'Calendar-date mode applies each date’s work/rest rule separately. Shift-start mode carries the starting day’s rule across midnight. Neither records actual attendance.';
+
+  @override
+  String get workIntervals => 'Additional work intervals';
+
+  @override
+  String get breakIntervals => 'Custom breaks';
+
+  @override
+  String get addInterval => 'Add interval';
+
+  @override
+  String get traceTitle => 'Calculation details';
+
+  @override
+  String get traceHelp =>
+      'CNY simulation, UTC+08:00. Exact rational arithmetic; half-up rounding is for display only. This is not a payslip, entitlement decision or bank payment.';
+
+  @override
+  String get migrationPending =>
+      'Migration could not be committed. Original data is retained. Retry before editing.';
+
+  @override
+  String get recoveryTitle => 'Backup and recovery';
+
+  @override
+  String get backupWarning =>
+      'Backups contain unencrypted financial data. Store them privately. SHA-256 detects accidental corruption; it does not prove authenticity or encrypt data. Import and recovery replace current configuration only after confirmation; retained copies remain available.';
+
+  @override
+  String get exportData => 'Export backup';
+
+  @override
+  String get importData => 'Import backup';
+
+  @override
+  String get restorePrevious => 'Restore previous configuration';
+
+  @override
+  String get restoreLegacy => 'Recover legacy configuration';
+
+  @override
+  String get operationFailed =>
+      'Operation failed. Current data was not silently cleared. Export recovery copies or retry.';
+
+  @override
+  String get operationDone => 'Completed';
+
+  @override
+  String get backupJson => 'Backup JSON (local only)';
+
+  @override
+  String get reviewImport => 'Review replacement';
+
+  @override
+  String get privacyScope =>
+      'Hide financial values in dashboard and detail pages. This does not block system screenshots or encrypt storage.';
+
+  @override
+  String get moreDetails => 'More details';
+
+  @override
+  String get copy => 'Copy JSON';
+
+  @override
+  String get policyTitle => 'Calendar and policy data';
+
+  @override
+  String get policyPending => 'Pending human verification';
+
+  @override
+  String get policyReviewed => 'Source reviewed';
+
+  @override
+  String get policyHelp =>
+      'Mainland China only. Working-day arrangements and statutory classifications are separate. Missing classifications stay unknown. Language never changes jurisdiction. No automatic policy requests or salary changes.';
+
+  @override
+  String get policyUpdate => 'Check policy data online';
+
+  @override
+  String get policyNetwork =>
+      'Fetch public policy JSON from this project’s GitHub repository? No salary or attendance data is sent. Cached data remains available offline.';
+
+  @override
+  String get policyRollback => 'Use previous cached version';
+
+  @override
+  String get policyApply => 'Apply reviewed working-day assumptions';
+
+  @override
+  String get policyConfirm =>
+      'I checked the official source and accept these dates as my personal simulation schedule. This does not verify statutory holiday or overtime eligibility.';
+
+  @override
+  String get policyUnknown => 'Unknown legal classification';
+
+  @override
+  String get policySource => 'Official source and version';
+
+  @override
+  String get personalOverride => 'Personal work/rest override';
+
+  @override
+  String get noPolicyYear =>
+      'No verified calendar for this year. Weekly schedule and personal overrides still apply.';
+
+  @override
+  String get policyCacheFailed =>
+      'Update or cache read failed. Existing data remains available; use the previous cached version if needed.';
+
+  @override
+  String get legalOrdinary => 'Ordinary workday';
+
+  @override
+  String get legalRest => 'Rest day';
+
+  @override
+  String get legalHoliday => 'Statutory holiday';
+
+  @override
+  String get legalAdjusted => 'Adjusted workday';
+
+  @override
+  String get legalPersonal => 'Personal leave';
+
+  @override
+  String get legalCompany => 'Company day off';
+
+  @override
+  String get otScopeConfirm =>
+      'I confirm mainland China standard 8-hour working-time rules apply and the separate overtime base is appropriate.';
+
+  @override
+  String get otArrangedConfirm =>
+      'This overtime was arranged by the employer; the selected day classification was checked.';
+
+  @override
+  String get otReviewConfirm =>
+      'I reviewed the official sources and applicability. This is my local confirmation, not an authority’s determination.';
+
+  @override
+  String get otPendingHelp =>
+      'Unconfirmed conditions or unclassified days remain pending. A classification applies only to the confirmed UTC+08:00 date; overnight time on other dates is not guessed. Cash amounts shown are known subtotals, not final entitlement.';
+
+  @override
+  String get otPendingTime => 'Pending reference time';
+
+  @override
+  String get otCompTime => 'Recorded compensatory time';
+
+  @override
+  String get otLegacy => 'Legacy snapshot: unverified assumptions retained';
+
+  @override
+  String get otCorrectionRecorded => 'End correction recorded';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get systemTheme => 'Follow system';
+
+  @override
+  String get lightTheme => 'Light';
+
+  @override
+  String get darkTheme => 'Dark';
+
+  @override
+  String get noEligibleTime => 'No eligible work time in this budget period';
+
+  @override
+  String get restoreImport => 'Restore state before last import';
 }

@@ -2,6 +2,7 @@ import 'package:earnings_core/earnings_core.dart';
 import 'package:flutter/material.dart';
 import '../../../application/settings.dart';
 import '../../../shared/presentation/design.dart';
+import '../../../shared/presentation/date_time_field.dart';
 import 'configuration_fields.dart';
 
 /// Initial setup uses separate short steps. Existing profiles edit one category.
@@ -106,7 +107,11 @@ class _ConfigurationEditorState extends State<ConfigurationEditor> {
         context: context,
         builder: (context) => AlertDialog(
           title: Text(l.recalculateTitle),
-          content: Text(l.recalculateBody),
+          content: SingleChildScrollView(
+            child: Text(
+              '${l.recalculateBody}\n\n${l.effectiveDate}: ${_draft.effective.text}\nCNY ${_draft.salary.text}\n${_draft.start.text}–${_draft.end.text}',
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
@@ -126,7 +131,16 @@ class _ConfigurationEditorState extends State<ConfigurationEditor> {
       _error = null;
     });
     try {
-      final settings = _draft.build();
+      final settings = _draft.build().copyWith(
+        salaryVersionRequested:
+            _dirty && widget.section == ConfigSection.salary,
+        scheduleVersionRequested:
+            _dirty &&
+            [
+              ConfigSection.schedule,
+              ConfigSection.calendar,
+            ].contains(widget.section),
+      );
       settings.toPolicy();
       await widget.onSave(settings);
       if (mounted) {
@@ -198,11 +212,25 @@ class _ConfigurationEditorState extends State<ConfigurationEditor> {
                       ? _reviewBody(context)
                       : Form(
                           key: _form,
-                          child: ConfigurationFields(
-                            key: ValueKey(_stages[_step]),
-                            section: _stages[_step],
-                            draft: _draft,
-                            changed: _changed,
+                          child: Column(
+                            children: [
+                              ConfigurationFields(
+                                key: ValueKey(_stages[_step]),
+                                section: _stages[_step],
+                                draft: _draft,
+                                changed: _changed,
+                              ),
+                              if (!_wizard &&
+                                  widget.section != ConfigSection.display &&
+                                  widget.initial?.document != null) ...[
+                                const SizedBox(height: 24),
+                                DateTimeField(
+                                  controller: _draft.effective,
+                                  label: l.effectiveDate,
+                                  onChanged: _changed,
+                                ),
+                              ],
+                            ],
                           ),
                         ),
                 ),
@@ -258,11 +286,16 @@ class _ConfigurationEditorState extends State<ConfigurationEditor> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l.reviewHelp, style: const TextStyle(color: muted)),
+        Text(
+          l.reviewHelp,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
         const SizedBox(height: 20),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.payments_outlined),
+          leading: Icon(Icons.payments_outlined),
           title: Text(l.salarySection),
           subtitle: Text(
             'CNY ${grouped(_draft.salary.text)}\n${_draft.date.text}',
@@ -289,7 +322,10 @@ class _ConfigurationEditorState extends State<ConfigurationEditor> {
         const SizedBox(height: 16),
         Text(
           l.currencyNote,
-          style: const TextStyle(color: muted, fontSize: 12),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontSize: 12,
+          ),
         ),
       ],
     );

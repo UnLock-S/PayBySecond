@@ -9,6 +9,8 @@ import '../infrastructure/system_clock.dart';
 import '../infrastructure/language_repository.dart';
 import 'app.dart';
 import '../infrastructure/create_updater.dart';
+import '../infrastructure/financial_backup.dart';
+import '../infrastructure/policy_repository.dart';
 
 void bootstrap() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +25,13 @@ void bootstrap() {
   runApp(
     PayBySecondApp(
       repository: LocalSettingsRepository(SharedPreferencesAsync()),
+      backup: FinancialBackup(
+        PreferencesKeyValueStore(SharedPreferencesAsync()),
+      ),
+      policyRepository: PolicyRepository(
+        PreferencesKeyValueStore(SharedPreferencesAsync()),
+      ),
+      appearanceStore: PreferencesKeyValueStore(SharedPreferencesAsync()),
       clock: SystemClock(),
       updates: createUpdater(),
       overtimeRepository: LocalOvertimeRepository(SharedPreferencesAsync()),

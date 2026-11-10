@@ -39,6 +39,57 @@ enum SalaryBasis { annual, monthly }
 
 enum Period { employment, year, month, week, day, hour }
 
+enum ShiftAttribution { calendarDate, shiftStartDate }
+
+/// Paid interval relative to the logical shift's civil anchor date.
+class AnchoredWorkSpan {
+  AnchoredWorkSpan(this.startMinute, this.endMinute) {
+    if (startMinute < 0 ||
+        endMinute > 2880 ||
+        startMinute >= endMinute ||
+        endMinute - startMinute > 1440) {
+      throw ArgumentError('Invalid anchored work interval');
+    }
+  }
+  final int startMinute, endMinute;
+}
+
+class CalculationSegment {
+  const CalculationSegment({
+    required this.start,
+    required this.end,
+    required this.amount,
+    required this.budget,
+    required this.numeratorMs,
+    required this.denominatorMs,
+    this.salaryRuleId = 'current-salary',
+    this.scheduleRuleId = 'current-schedule',
+    this.utcOffsetMinutes = 480,
+  });
+  final DateTime start, end;
+  final Money amount, budget;
+  final int numeratorMs, denominatorMs;
+  final int utcOffsetMinutes;
+  final String salaryRuleId, scheduleRuleId;
+  Map<String, Object> toJson() => {
+    'amountType': 'simulated_accrual',
+    'start': start
+        .subtract(Duration(minutes: utcOffsetMinutes))
+        .toIso8601String(),
+    'end': end.subtract(Duration(minutes: utcOffsetMinutes)).toIso8601String(),
+    'workUtcOffsetMinutes': utcOffsetMinutes,
+    'salaryRuleId': salaryRuleId,
+    'scheduleRuleId': scheduleRuleId,
+    'formulaId': 'salary.budget.v1',
+    'numeratorTimeMs': numeratorMs.toString(),
+    'denominatorTimeMs': denominatorMs.toString(),
+    'exactAmountMinorRational':
+        '${amount.scale(100).numerator}/${amount.scale(100).denominator}',
+    'roundingMode': 'half-away-from-zero-display-only',
+    'displayAmount': amount.format(4),
+  };
+}
+
 class WorkSpan {
   const WorkSpan(this.startMinute, this.endMinute);
   final int startMinute;
@@ -57,12 +108,16 @@ class EarningsPolicy {
     Set<int> weekdays = const {1, 2, 3, 4, 5},
     List<WorkSpan> spans = const [WorkSpan(480, 720), WorkSpan(780, 1020)],
     Map<String, bool> dateOverrides = const {},
+    this.shiftAttribution = ShiftAttribution.calendarDate,
+    List<AnchoredWorkSpan> anchoredSpans = const [],
   }) : startDate = DateTime.utc(startDate.year, startDate.month, startDate.day),
        weekdays = Set.unmodifiable(weekdays),
        spans = List.unmodifiable(spans),
-       dateOverrides = Map.unmodifiable(dateOverrides) {
-    if (monthlyMinor < BigInt.zero)
+       dateOverrides = Map.unmodifiable(dateOverrides),
+       anchoredSpans = List.unmodifiable(anchoredSpans) {
+    if (monthlyMinor < BigInt.zero) {
       throw ArgumentError('Salary cannot be negative');
+    }
     if (this.startDate.year < 1970 || this.startDate.year > 2100) {
       throw ArgumentError('Start year must be between 1970 and 2100');
     }
@@ -96,6 +151,8 @@ class EarningsPolicy {
   final Set<int> weekdays;
   final List<WorkSpan> spans;
   final Map<String, bool> dateOverrides;
+  final ShiftAttribution shiftAttribution;
+  final List<AnchoredWorkSpan> anchoredSpans;
 
   static String dateKey(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
@@ -111,6 +168,7 @@ class _Year {
 class EarningsEngine {
   EarningsEngine(this.policy);
   final EarningsPolicy policy;
+  EarningsPolicy policyAt(DateTime instant) => policy;
   final _years = LinkedHashMap<int, _Year>();
   static const _dayMs = 86400000;
   static const _minuteMs = 60000;
@@ -137,7 +195,20 @@ class EarningsEngine {
   Money earned(Period period, DateTime instant) =>
       betweenCivil(periodStart(period, instant), civilTime(instant));
 
-  Money betweenCivil(DateTime start, DateTime end) {
+  Money betweenCivil(DateTime start, DateTime end) =>
+      _calculate(start, end, null);
+
+  List<CalculationSegment> traceBetweenCivil(DateTime start, DateTime end) {
+    final segments = <CalculationSegment>[];
+    _calculate(start, end, segments);
+    return List.unmodifiable(segments);
+  }
+
+  Money _calculate(
+    DateTime start,
+    DateTime end,
+    List<CalculationSegment>? trace,
+  ) {
     if (!start.isUtc || !end.isUtc) {
       throw ArgumentError('Civil components must use DateTime.utc');
     }
@@ -160,18 +231,48 @@ class EarningsEngine {
       // A complete fixed-policy period earns its budget if it has any paid time.
       final year = _year(cursor.year);
       final denominator = _elapsed(base, next, year);
+      final numerator = _elapsed(cursor, stop, year);
+      final budget = trace == null
+          ? Money.zero
+          : Money(
+              policy.monthlyMinor * BigInt.from(annual ? 12 : 1),
+              BigInt.from(100),
+            );
+      var amount = Money.zero;
       if (denominator > 0) {
-        final numerator = _elapsed(cursor, stop, year);
-        total += Money(
+        amount = Money(
           policy.monthlyMinor *
               BigInt.from(annual ? 12 : 1) *
               BigInt.from(numerator),
           BigInt.from(100) * BigInt.from(denominator),
         );
+        total += amount;
       }
+      trace?.add(
+        CalculationSegment(
+          start: cursor,
+          end: stop,
+          amount: amount,
+          budget: budget,
+          numeratorMs: numerator,
+          denominatorMs: denominator,
+          utcOffsetMinutes: policy.utcOffsetMinutes,
+        ),
+      );
       cursor = stop;
     }
     return total;
+  }
+
+  int eligibleMilliseconds(DateTime instant) {
+    final t = civilTime(instant), year = _year(civilTime(instant).year);
+    return policy.basis == SalaryBasis.annual
+        ? year.prefix.last
+        : _elapsed(
+            DateTime.utc(t.year, t.month),
+            DateTime.utc(t.year, t.month + 1),
+            year,
+          );
   }
 
   Money ratePerSecond(DateTime instant) {
@@ -253,12 +354,45 @@ class EarningsEngine {
     }
     for (var i = 0; i < days; i++) {
       final date = DateTime.utc(number, 1, 1 + i);
-      final working =
-          policy.dateOverrides[EarningsPolicy.dateKey(date)] ??
-          policy.weekdays.contains(date.weekday);
+      bool working(DateTime anchor) =>
+          policy.dateOverrides[EarningsPolicy.dateKey(anchor)] ??
+          policy.weekdays.contains(anchor.weekday);
+      final anchored = <WorkSpan>[];
+      if (policy.mode == AccrualMode.work &&
+          policy.shiftAttribution == ShiftAttribution.shiftStartDate) {
+        final templates = policy.anchoredSpans.isEmpty
+            ? policy.spans
+                  .map((s) => AnchoredWorkSpan(s.startMinute, s.endMinute))
+                  .toList()
+            : policy.anchoredSpans;
+        for (final offset in [0, 1440]) {
+          if (!working(date.subtract(Duration(minutes: offset)))) continue;
+          for (final span in templates) {
+            final begin = (span.startMinute - offset).clamp(0, 1440);
+            final finish = (span.endMinute - offset).clamp(0, 1440);
+            if (begin < finish) anchored.add(WorkSpan(begin, finish));
+          }
+        }
+        anchored.sort((a, b) => a.startMinute.compareTo(b.startMinute));
+        for (var n = 1; n < anchored.length;) {
+          if (anchored[n].startMinute <= anchored[n - 1].endMinute) {
+            final previous = anchored[n - 1], current = anchored.removeAt(n);
+            anchored[n - 1] = WorkSpan(
+              previous.startMinute,
+              current.endMinute > previous.endMinute
+                  ? current.endMinute
+                  : previous.endMinute,
+            );
+          } else {
+            n++;
+          }
+        }
+      }
       final spans = policy.mode == AccrualMode.calendar
           ? const [WorkSpan(0, 1440)]
-          : working
+          : policy.shiftAttribution == ShiftAttribution.shiftStartDate
+          ? anchored
+          : working(date)
           ? merged
           : <WorkSpan>[];
       schedule.add(spans);

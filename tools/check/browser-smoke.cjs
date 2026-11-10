@@ -32,10 +32,10 @@ async function snapshot(page,name){await page.mouse.move(0,0);await page.waitFor
   await page.getByRole('textbox').first().waitFor({state:'detached'});
   assert.equal(await page.getByRole('textbox').count(),0,'Calculation step excludes salary fields');
   await clickButton(page,translations.zh.next);
-  assert.equal(await page.evaluate(()=>Object.keys(localStorage).some(k=>k.endsWith('pay_by_second.profile.v1'))),false,'Draft stays unsaved until confirmation');
+  assert.equal(await page.evaluate(()=>Object.keys(localStorage).some(k=>k.endsWith('pay_by_second.profile.v2'))),false,'Draft stays unsaved until confirmation');
   await clickButton(page,translations.zh.finish);
   await page.getByRole('button',{name:translations.zh.settings,exact:true}).waitFor();
-  const profile=await page.evaluate(()=>localStorage.getItem(Object.keys(localStorage).find(k=>k.endsWith('pay_by_second.profile.v1'))));
+  const profile=await page.evaluate(()=>localStorage.getItem(Object.keys(localStorage).find(k=>k.endsWith('pay_by_second.profile.v2'))));
   assert(profile&&profile.includes('20000'));
   const balance=page.getByText(/^CN¥ /).first();const before=await balance.innerText();await page.waitForTimeout(1400);assert.notEqual(await balance.innerText(),before);
   await clickButton(page,translations.zh.hide);await page.getByText('••••••',{exact:true}).first().waitFor();
@@ -69,7 +69,7 @@ async function snapshot(page,name){await page.mouse.move(0,0);await page.waitFor
    await clickButton(page,translations[lang].licenses);
    await back(page,lang);await back(page,lang);await back(page,lang);
    await boot(page);await page.getByText(translations[lang].headline,{exact:true}).waitFor();
-   const profileAfter=await page.evaluate(()=>localStorage.getItem(Object.keys(localStorage).find(k=>k.endsWith('pay_by_second.profile.v1'))));
+   const profileAfter=await page.evaluate(()=>localStorage.getItem(Object.keys(localStorage).find(k=>k.endsWith('pay_by_second.profile.v2'))));
    assert.equal(profileAfter,profile,'Language and navigation must not rewrite salary');
    const mobile=await context({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true,storageState:await desktop.storageState()});
    const phone=await mobile.newPage();await boot(phone);await phone.getByText(translations[lang].headline,{exact:true}).waitFor();await snapshot(phone,'dashboard-mobile-'+lang);
@@ -83,10 +83,10 @@ async function snapshot(page,name){await page.mouse.move(0,0);await page.waitFor
   // New overtime flow uses the Japanese UI left by the locale regression loop.
   const ot=JSON.parse(fs.readFileSync(path.join(root,'src/apps/pay_by_second/lib/l10n/app_ja.arb'),'utf8'));
   const ledger=()=>page.evaluate(()=>{
-   const key=Object.keys(localStorage).find(k=>k.endsWith('pay_by_second.overtime.v1'));
+   const key=Object.keys(localStorage).find(k=>k.endsWith('pay_by_second.overtime.v2'));
    if(!key)return null;
    let value=JSON.parse(localStorage.getItem(key));
-   return typeof value==='string'?JSON.parse(value):value;
+   value=typeof value==='string'?JSON.parse(value):value; return value.payload;
   });
   await clickButton(page,ot.otStart);
   await page.getByText(ot.otSettings,{exact:true}).waitFor();

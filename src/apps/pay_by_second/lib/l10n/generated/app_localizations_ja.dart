@@ -57,7 +57,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get hour => '現在の時間帯';
 
   @override
-  String get earned => '累計収入';
+  String get earned => '収入シミュレーション';
 
   @override
   String get hideAmount => '金額非表示';
@@ -146,7 +146,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get annualHelp => '年間予算は月給×12。各月の累計は月給と異なる場合があります。';
 
   @override
-  String get monthlyHelp => '各月の予算は月給と同額。毎秒の加算額は月ごとに変動。';
+  String get monthlyHelp => '同一規則が一か月を覆う場合は月予算を使用します。月中変更では規則ごとに一か月全体の分母を使います。';
 
   @override
   String get budgetBasis => '平均基準';
@@ -209,7 +209,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get workOnlyNote => '勤務時間限定の計算時のみ適用。';
 
   @override
-  String get calendarWarning => '公式祝日情報は未連携。未設定の日付は勤務曜日で概算。';
+  String get calendarWarning => '個人設定は試算の勤務時間だけに適用し、法定手当の倍率判定には使用しません。';
 
   @override
   String get addDate => '日付追加';
@@ -277,13 +277,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get edit => '変更';
 
   @override
-  String get recalculateTitle => '過去の収入を再計算？';
+  String get recalculateTitle => '規則変更の確認';
 
   @override
-  String get recalculateBody => '現在は設定を1件のみ保存。変更後は過去の概算収入も再計算。給与履歴は未対応。';
+  String get recalculateBody =>
+      '適用日付きの規則を保存します。それ以前の規則は維持し、同日修正では旧値を保管します。入社日を早めると初期仮定を延長します。規則ごとに全期間の分母を使うため、合計は固定給与額と異なる場合があります。';
 
   @override
-  String get confirmSave => '保存・再計算';
+  String get confirmSave => '変更を確定';
 
   @override
   String get discardTitle => '未保存の変更を破棄？';
@@ -335,7 +336,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get limitations => '対応範囲';
 
   @override
-  String get limitationsBody => '端末内試用版。認証・公式祝日・給与履歴・端末間同期は未対応。';
+  String get limitationsBody =>
+      '端末内の試算です。実アカウント、クラウド同期、税務・給与精算、確認済み出勤管理には対応していません。政策データは別途確認が必要です。';
 
   @override
   String get licenses => '利用許諾';
@@ -386,10 +388,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get otThisTime => '今回の勤務';
 
   @override
-  String get otExpected => '設定に基づく残業代概算';
+  String get otExpected => '選択した手当の試算・確認可能分の小計';
 
   @override
-  String get otLegalReference => '中国法定基準の参考額';
+  String get otLegalReference => '法令参考額・確認可能分の小計';
 
   @override
   String otJoke(String amount) {
@@ -445,7 +447,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get otCompLeave => '休日勤務の振替休暇あり';
 
   @override
-  String get otCompHelp => '休日勤務の法定現金参考額を0にします。法定祝日は3倍です。';
+  String get otCompHelp => '休息日に適法な代休を手配済みの場合、支払参考額がゼロとなる場合も、対応時間は別途記録します。';
 
   @override
   String get otBase => '残業代計算用の月額給与';
@@ -608,4 +610,195 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get updateOpenError => 'ブラウザを開けませんでした。表示中の公開URLをコピーしてください。';
+
+  @override
+  String get effectiveDate => '適用開始日';
+
+  @override
+  String get historyTitle => '給与・勤務履歴';
+
+  @override
+  String get historyHelp =>
+      '初期規則は設定上の仮定であり、確認済み給与記録ではありません。将来の規則は適用日から有効です。変更前の規則も保存します。';
+
+  @override
+  String get attribution => '日付をまたぐ勤務の帰属';
+
+  @override
+  String get calendarDate => '暦日単位（従来規則）';
+
+  @override
+  String get shiftStartDate => '勤務開始日単位';
+
+  @override
+  String get attributionHelp =>
+      '暦日単位では各日の勤務規則を適用します。開始日単位では翌日の勤務部分にも開始日の規則を適用します。実際の出勤記録ではありません。';
+
+  @override
+  String get workIntervals => '追加勤務時間帯';
+
+  @override
+  String get breakIntervals => '休憩時間帯';
+
+  @override
+  String get addInterval => '時間帯を追加';
+
+  @override
+  String get traceTitle => '計算根拠';
+
+  @override
+  String get traceHelp =>
+      '人民元の試算、UTC+08:00固定。有理数で計算し、表示時のみ四捨五入します。給与明細・法的権利の判定・入金額ではありません。';
+
+  @override
+  String get migrationPending => '移行を保存できませんでした。元データは保持しています。編集前に再試行してください。';
+
+  @override
+  String get recoveryTitle => 'バックアップ・復元';
+
+  @override
+  String get backupWarning =>
+      'バックアップには暗号化されていない財務情報を含みます。安全に保管してください。SHA-256は破損検知用で、真正性の証明や暗号化ではありません。読込・復元は確認後に現在の設定を置き換え、保存済みの写しは保持します。';
+
+  @override
+  String get exportData => 'バックアップ出力';
+
+  @override
+  String get importData => 'バックアップ読込';
+
+  @override
+  String get restorePrevious => '直前の設定を復元';
+
+  @override
+  String get restoreLegacy => '旧版設定を復元';
+
+  @override
+  String get operationFailed =>
+      '操作に失敗しました。現在のデータを自動消去していません。復元用の写しを出力するか再試行してください。';
+
+  @override
+  String get operationDone => '完了';
+
+  @override
+  String get backupJson => 'バックアップJSON（端末内）';
+
+  @override
+  String get reviewImport => '置換内容を確認';
+
+  @override
+  String get privacyScope => 'ホームと明細の金額を非表示にします。画面撮影の禁止や保存データの暗号化は行いません。';
+
+  @override
+  String get moreDetails => '詳細表示';
+
+  @override
+  String get copy => 'JSONをコピー';
+
+  @override
+  String get policyTitle => '暦・政策データ';
+
+  @override
+  String get policyPending => '人による確認待ち';
+
+  @override
+  String get policyReviewed => '出典確認済み';
+
+  @override
+  String get policyHelp =>
+      '中国本土向けです。勤務予定と法定区分を分け、未確認の区分は不明のまま表示します。言語設定で適用地域は変わりません。政策取得や給与変更は自動実行しません。';
+
+  @override
+  String get policyUpdate => '政策データを取得';
+
+  @override
+  String get policyNetwork =>
+      '本プロジェクトのGitHubから公開政策JSONを取得しますか。給与・勤務情報は送信しません。保存済みデータはオフラインでも使用できます。';
+
+  @override
+  String get policyRollback => '前の保存版に戻す';
+
+  @override
+  String get policyApply => '確認した勤務日の仮定を適用';
+
+  @override
+  String get policyConfirm =>
+      '公式資料を確認し、この日程を個人の試算用勤務予定として採用します。法定休日や時間外手当の適用認定には使用しません。';
+
+  @override
+  String get policyUnknown => '法定区分不明';
+
+  @override
+  String get policySource => '公式資料・版情報';
+
+  @override
+  String get personalOverride => '個人の勤務・休暇設定';
+
+  @override
+  String get noPolicyYear => 'この年の確認済み暦はありません。週間勤務と個人設定を使用します。';
+
+  @override
+  String get policyCacheFailed =>
+      '取得または保存データの読込に失敗しました。既存データを維持します。必要に応じて前の保存版をご利用ください。';
+
+  @override
+  String get legalOrdinary => '通常勤務日';
+
+  @override
+  String get legalRest => '休息日';
+
+  @override
+  String get legalHoliday => '法定休日';
+
+  @override
+  String get legalAdjusted => '振替勤務日';
+
+  @override
+  String get legalPersonal => '個人休暇';
+
+  @override
+  String get legalCompany => '会社休業日';
+
+  @override
+  String get otScopeConfirm =>
+      '中国本土の標準8時間労働制が適用され、別途入力した時間外手当の計算基礎が適切であることを確認します。';
+
+  @override
+  String get otArrangedConfirm => 'この時間外勤務は使用者の指示によるもので、選択した日区分を確認しました。';
+
+  @override
+  String get otReviewConfirm => '公式資料と適用条件を確認しました。端末内の個人確認であり、公的機関の認定ではありません。';
+
+  @override
+  String get otPendingHelp =>
+      '未確認の条件や日区分は確認待ちとします。区分は確認したUTC+08:00の日付だけに適用し、翌日分は推定しません。金額は確認可能な部分の小計であり、最終的な請求権の額ではありません。';
+
+  @override
+  String get otPendingTime => '参考額の確認待ち時間';
+
+  @override
+  String get otCompTime => '記録した代休時間';
+
+  @override
+  String get otLegacy => '旧版記録：未確認の従来仮定を保持';
+
+  @override
+  String get otCorrectionRecorded => '終了時刻の修正履歴';
+
+  @override
+  String get appearance => '表示テーマ';
+
+  @override
+  String get systemTheme => '端末設定に従う';
+
+  @override
+  String get lightTheme => 'ライト';
+
+  @override
+  String get darkTheme => 'ダーク';
+
+  @override
+  String get noEligibleTime => 'この予算期間に有効な勤務時間がありません';
+
+  @override
+  String get restoreImport => '前回読込前の状態を復元';
 }

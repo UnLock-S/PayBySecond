@@ -63,11 +63,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
-                      Icons.system_update_alt,
-                      color: accent,
-                      size: 36,
-                    ),
+                    Icon(Icons.system_update_alt, color: accent, size: 36),
                     const SizedBox(height: 16),
                     Text(
                       c.installed == null
@@ -93,7 +89,12 @@ class _UpdatesPageState extends State<UpdatesPage> {
                                 .substring(0, 19)
                                 .replaceFirst('T', ' '),
                           ),
-                          style: const TextStyle(fontSize: 12, color: muted),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
                     if (c.status == UpdateStatus.checking)
@@ -105,13 +106,16 @@ class _UpdatesPageState extends State<UpdatesPage> {
                     FilledButton.icon(
                       key: const Key('check-updates'),
                       onPressed: c.canCheck ? () => c.check() : null,
-                      icon: const Icon(Icons.refresh),
+                      icon: Icon(Icons.refresh),
                       label: Text(l.updateCheckNow),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       l.updateFrequencyHelp,
-                      style: const TextStyle(fontSize: 12, color: muted),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -137,7 +141,7 @@ class _UpdatesPageState extends State<UpdatesPage> {
                     children: [
                       Text(
                         l.updateReleaseVersion(release.version.toString()),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
                         ),
@@ -163,13 +167,18 @@ class _UpdatesPageState extends State<UpdatesPage> {
                         const SizedBox(height: 12),
                         Text(
                           l.updateInstallHelp,
-                          style: const TextStyle(fontSize: 12, color: muted),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
                         ),
                         if (release.sha256 != null) ...[
                           const SizedBox(height: 12),
                           SelectableText(
                             'SHA256: ${release.sha256}',
-                            style: const TextStyle(fontSize: 12),
+                            style: TextStyle(fontSize: 12),
                           ),
                         ],
                       ],
@@ -180,12 +189,18 @@ class _UpdatesPageState extends State<UpdatesPage> {
               const SizedBox(height: 20),
               Text(
                 l.updatePrivacyHelp,
-                style: const TextStyle(color: muted, fontSize: 13),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: 12),
               SelectableText(
                 c.source.releases.toString(),
-                style: const TextStyle(fontSize: 12, color: muted),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 12),
               OutlinedButton(

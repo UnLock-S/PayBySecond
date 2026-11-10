@@ -199,7 +199,7 @@ abstract class AppLocalizations {
   /// No description provided for @earned.
   ///
   /// In en, this message translates to:
-  /// **'Earned so far'**
+  /// **'Simulated accrual'**
   String get earned;
 
   /// No description provided for @hideAmount.
@@ -373,7 +373,7 @@ abstract class AppLocalizations {
   /// No description provided for @monthlyHelp.
   ///
   /// In en, this message translates to:
-  /// **'Each complete month earns the monthly salary. The per-second rate varies by month.'**
+  /// **'A complete month under one unchanged rule uses one monthly budget. Mid-month rule changes use each rule’s full-month denominator.'**
   String get monthlyHelp;
 
   /// No description provided for @budgetBasis.
@@ -499,7 +499,7 @@ abstract class AppLocalizations {
   /// No description provided for @calendarWarning.
   ///
   /// In en, this message translates to:
-  /// **'Official holiday calendars are not connected. Other dates follow your weekly schedule.'**
+  /// **'Personal overrides affect simulation work time only. They never determine a statutory overtime multiplier.'**
   String get calendarWarning;
 
   /// No description provided for @addDate.
@@ -631,19 +631,19 @@ abstract class AppLocalizations {
   /// No description provided for @recalculateTitle.
   ///
   /// In en, this message translates to:
-  /// **'Recalculate past income?'**
+  /// **'Review rule change'**
   String get recalculateTitle;
 
   /// No description provided for @recalculateBody.
   ///
   /// In en, this message translates to:
-  /// **'Only one rule set is stored. Saving will recalculate all past estimates. Salary history is not supported yet.'**
+  /// **'Save a dated rule. Earlier intervals retain their rules. A same-date correction archives the replaced value. Moving employment earlier extends the initial baseline assumption. Different rules use their own complete-period denominator; totals may differ from a fixed salary budget.'**
   String get recalculateBody;
 
   /// No description provided for @confirmSave.
   ///
   /// In en, this message translates to:
-  /// **'Save & recalculate'**
+  /// **'Confirm change'**
   String get confirmSave;
 
   /// No description provided for @discardTitle.
@@ -745,7 +745,7 @@ abstract class AppLocalizations {
   /// No description provided for @limitationsBody.
   ///
   /// In en, this message translates to:
-  /// **'Local preview. Accounts, official holiday calendars, salary history and sync are not connected yet.'**
+  /// **'Local simulation. Real accounts, cloud sync, tax/payroll settlement and verified attendance are not provided. Policy data must be reviewed separately.'**
   String get limitationsBody;
 
   /// No description provided for @licenses.
@@ -847,13 +847,13 @@ abstract class AppLocalizations {
   /// No description provided for @otExpected.
   ///
   /// In en, this message translates to:
-  /// **'Expected overtime pay'**
+  /// **'Selected pay estimate · known subtotal'**
   String get otExpected;
 
   /// No description provided for @otLegalReference.
   ///
   /// In en, this message translates to:
-  /// **'Statutory reference'**
+  /// **'Statutory reference · known subtotal'**
   String get otLegalReference;
 
   /// No description provided for @otJoke.
@@ -961,7 +961,7 @@ abstract class AppLocalizations {
   /// No description provided for @otCompHelp.
   ///
   /// In en, this message translates to:
-  /// **'Rest-day statutory cash reference becomes zero; statutory holidays remain 3×.'**
+  /// **'Confirmed compliant compensatory leave on a rest day: cash reference may be zero; the corresponding time remains separately recorded.'**
   String get otCompHelp;
 
   /// No description provided for @otBase.
@@ -1257,6 +1257,366 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open a browser. Copy the release URL shown on this page.'**
   String get updateOpenError;
+
+  /// No description provided for @effectiveDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Effective date'**
+  String get effectiveDate;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary and schedule history'**
+  String get historyTitle;
+
+  /// No description provided for @historyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'The first rule is your configured baseline, not a verified pay record. Future rules activate on their effective date. Replaced rules remain archived.'**
+  String get historyHelp;
+
+  /// No description provided for @attribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Overnight attribution'**
+  String get attribution;
+
+  /// No description provided for @calendarDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar date (legacy)'**
+  String get calendarDate;
+
+  /// No description provided for @shiftStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Shift start date'**
+  String get shiftStartDate;
+
+  /// No description provided for @attributionHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar-date mode applies each date’s work/rest rule separately. Shift-start mode carries the starting day’s rule across midnight. Neither records actual attendance.'**
+  String get attributionHelp;
+
+  /// No description provided for @workIntervals.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional work intervals'**
+  String get workIntervals;
+
+  /// No description provided for @breakIntervals.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom breaks'**
+  String get breakIntervals;
+
+  /// No description provided for @addInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Add interval'**
+  String get addInterval;
+
+  /// No description provided for @traceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculation details'**
+  String get traceTitle;
+
+  /// No description provided for @traceHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'CNY simulation, UTC+08:00. Exact rational arithmetic; half-up rounding is for display only. This is not a payslip, entitlement decision or bank payment.'**
+  String get traceHelp;
+
+  /// No description provided for @migrationPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Migration could not be committed. Original data is retained. Retry before editing.'**
+  String get migrationPending;
+
+  /// No description provided for @recoveryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup and recovery'**
+  String get recoveryTitle;
+
+  /// No description provided for @backupWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Backups contain unencrypted financial data. Store them privately. SHA-256 detects accidental corruption; it does not prove authenticity or encrypt data. Import and recovery replace current configuration only after confirmation; retained copies remain available.'**
+  String get backupWarning;
+
+  /// No description provided for @exportData.
+  ///
+  /// In en, this message translates to:
+  /// **'Export backup'**
+  String get exportData;
+
+  /// No description provided for @importData.
+  ///
+  /// In en, this message translates to:
+  /// **'Import backup'**
+  String get importData;
+
+  /// No description provided for @restorePrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore previous configuration'**
+  String get restorePrevious;
+
+  /// No description provided for @restoreLegacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover legacy configuration'**
+  String get restoreLegacy;
+
+  /// No description provided for @operationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation failed. Current data was not silently cleared. Export recovery copies or retry.'**
+  String get operationFailed;
+
+  /// No description provided for @operationDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get operationDone;
+
+  /// No description provided for @backupJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup JSON (local only)'**
+  String get backupJson;
+
+  /// No description provided for @reviewImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Review replacement'**
+  String get reviewImport;
+
+  /// No description provided for @privacyScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide financial values in dashboard and detail pages. This does not block system screenshots or encrypt storage.'**
+  String get privacyScope;
+
+  /// No description provided for @moreDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'More details'**
+  String get moreDetails;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy JSON'**
+  String get copy;
+
+  /// No description provided for @policyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar and policy data'**
+  String get policyTitle;
+
+  /// No description provided for @policyPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending human verification'**
+  String get policyPending;
+
+  /// No description provided for @policyReviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Source reviewed'**
+  String get policyReviewed;
+
+  /// No description provided for @policyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Mainland China only. Working-day arrangements and statutory classifications are separate. Missing classifications stay unknown. Language never changes jurisdiction. No automatic policy requests or salary changes.'**
+  String get policyHelp;
+
+  /// No description provided for @policyUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Check policy data online'**
+  String get policyUpdate;
+
+  /// No description provided for @policyNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetch public policy JSON from this project’s GitHub repository? No salary or attendance data is sent. Cached data remains available offline.'**
+  String get policyNetwork;
+
+  /// No description provided for @policyRollback.
+  ///
+  /// In en, this message translates to:
+  /// **'Use previous cached version'**
+  String get policyRollback;
+
+  /// No description provided for @policyApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply reviewed working-day assumptions'**
+  String get policyApply;
+
+  /// No description provided for @policyConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'I checked the official source and accept these dates as my personal simulation schedule. This does not verify statutory holiday or overtime eligibility.'**
+  String get policyConfirm;
+
+  /// No description provided for @policyUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown legal classification'**
+  String get policyUnknown;
+
+  /// No description provided for @policySource.
+  ///
+  /// In en, this message translates to:
+  /// **'Official source and version'**
+  String get policySource;
+
+  /// No description provided for @personalOverride.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal work/rest override'**
+  String get personalOverride;
+
+  /// No description provided for @noPolicyYear.
+  ///
+  /// In en, this message translates to:
+  /// **'No verified calendar for this year. Weekly schedule and personal overrides still apply.'**
+  String get noPolicyYear;
+
+  /// No description provided for @policyCacheFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Update or cache read failed. Existing data remains available; use the previous cached version if needed.'**
+  String get policyCacheFailed;
+
+  /// No description provided for @legalOrdinary.
+  ///
+  /// In en, this message translates to:
+  /// **'Ordinary workday'**
+  String get legalOrdinary;
+
+  /// No description provided for @legalRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest day'**
+  String get legalRest;
+
+  /// No description provided for @legalHoliday.
+  ///
+  /// In en, this message translates to:
+  /// **'Statutory holiday'**
+  String get legalHoliday;
+
+  /// No description provided for @legalAdjusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjusted workday'**
+  String get legalAdjusted;
+
+  /// No description provided for @legalPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal leave'**
+  String get legalPersonal;
+
+  /// No description provided for @legalCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Company day off'**
+  String get legalCompany;
+
+  /// No description provided for @otScopeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm mainland China standard 8-hour working-time rules apply and the separate overtime base is appropriate.'**
+  String get otScopeConfirm;
+
+  /// No description provided for @otArrangedConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'This overtime was arranged by the employer; the selected day classification was checked.'**
+  String get otArrangedConfirm;
+
+  /// No description provided for @otReviewConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'I reviewed the official sources and applicability. This is my local confirmation, not an authority’s determination.'**
+  String get otReviewConfirm;
+
+  /// No description provided for @otPendingHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Unconfirmed conditions or unclassified days remain pending. A classification applies only to the confirmed UTC+08:00 date; overnight time on other dates is not guessed. Cash amounts shown are known subtotals, not final entitlement.'**
+  String get otPendingHelp;
+
+  /// No description provided for @otPendingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending reference time'**
+  String get otPendingTime;
+
+  /// No description provided for @otCompTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded compensatory time'**
+  String get otCompTime;
+
+  /// No description provided for @otLegacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Legacy snapshot: unverified assumptions retained'**
+  String get otLegacy;
+
+  /// No description provided for @otCorrectionRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'End correction recorded'**
+  String get otCorrectionRecorded;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @systemTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow system'**
+  String get systemTheme;
+
+  /// No description provided for @lightTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get lightTheme;
+
+  /// No description provided for @darkTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get darkTheme;
+
+  /// No description provided for @noEligibleTime.
+  ///
+  /// In en, this message translates to:
+  /// **'No eligible work time in this budget period'**
+  String get noEligibleTime;
+
+  /// No description provided for @restoreImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore state before last import'**
+  String get restoreImport;
 }
 
 class _AppLocalizationsDelegate

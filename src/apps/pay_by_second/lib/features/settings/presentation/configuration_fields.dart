@@ -6,6 +6,78 @@ import '../../../application/date_time_input.dart';
 import '../../../shared/presentation/date_time_field.dart';
 import '../../../shared/presentation/design.dart';
 
+class _IntervalDialog extends StatefulWidget {
+  const _IntervalDialog();
+  @override
+  State<_IntervalDialog> createState() => _IntervalDialogState();
+}
+
+class _IntervalDialogState extends State<_IntervalDialog> {
+  final start = TextEditingController(text: '08:00'),
+      end = TextEditingController(text: '09:00');
+  final form = GlobalKey<FormState>();
+  @override
+  void dispose() {
+    start.dispose();
+    end.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(context.l.addInterval),
+    content: SingleChildScrollView(
+      child: Form(
+        key: form,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DateTimeField(
+              controller: start,
+              label: context.l.shiftStart,
+              time: true,
+              onChanged: () {},
+            ),
+            const SizedBox(height: 16),
+            DateTimeField(
+              controller: end,
+              label: context.l.shiftEnd,
+              time: true,
+              onChanged: () {},
+              validator: (v) =>
+                  parseFlexibleTime(v ?? '') == null ||
+                      parseFlexibleTime(v ?? '') ==
+                          parseFlexibleTime(start.text)
+                  ? context.l.shiftError
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: Text(context.l.cancel),
+      ),
+      FilledButton(
+        onPressed: () {
+          if (form.currentState!.validate()) {
+            Navigator.pop(
+              context,
+              WorkInterval(
+                parseFlexibleTime(start.text)!,
+                parseFlexibleTime(end.text)!,
+              ),
+            );
+          }
+        },
+        child: Text(context.l.save),
+      ),
+    ],
+  );
+}
+
 enum ConfigSection { salary, calculation, schedule, calendar, display }
 
 String sectionTitle(ConfigSection section, AppLocalizations l) =>
@@ -18,14 +90,22 @@ String sectionTitle(ConfigSection section, AppLocalizations l) =>
     };
 
 class ConfigurationDraft {
-  ConfigurationDraft(Settings? original, DateTime now) {
+  ConfigurationDraft(this.original, DateTime now) {
     final s = original;
     salary.text = s?.salary ?? '';
     date.text = EarningsPolicy.dateKey(
       s?.start ?? now.toUtc().add(const Duration(hours: 8)),
     );
-    start.text = _time(s?.startMinute ?? 480);
-    end.text = _time(s?.endMinute ?? 1020);
+    start.text = _time(
+      s != null && s.intervals.isNotEmpty
+          ? s.intervals.first.start
+          : s?.startMinute ?? 480,
+    );
+    end.text = _time(
+      s != null && s.intervals.isNotEmpty
+          ? s.intervals.first.end
+          : s?.endMinute ?? 1020,
+    );
     mode = s?.mode ?? AccrualMode.calendar;
     basis = s?.basis ?? SalaryBasis.annual;
     days = {
@@ -36,17 +116,27 @@ class ConfigurationDraft {
     refresh = s?.refreshMs ?? 1000;
     digits = s?.digits ?? 4;
     overrides = {...?s?.overrides};
+    attribution = s?.shiftAttribution ?? ShiftAttribution.calendarDate;
+    intervals = [...?s?.intervals];
+    breaks = [...?s?.breaks];
+    effective.text = EarningsPolicy.dateKey(
+      now.toUtc().add(const Duration(hours: 8)),
+    );
   }
+  final Settings? original;
   final salary = TextEditingController(),
       date = TextEditingController(),
       start = TextEditingController(),
-      end = TextEditingController();
+      end = TextEditingController(),
+      effective = TextEditingController();
   late AccrualMode mode;
   late SalaryBasis basis;
   late Set<int> days;
   late bool lunch;
   late int refresh, digits;
   late Map<String, bool> overrides;
+  late ShiftAttribution attribution;
+  late List<WorkInterval> intervals, breaks;
   static String _time(int m) =>
       '${(m ~/ 60).toString().padLeft(2, '0')}:${(m % 60).toString().padLeft(2, '0')}';
   static DateTime? parseDate(String text) => parseFlexibleDate(text);
@@ -63,6 +153,10 @@ class ConfigurationDraft {
     lunch,
     refresh,
     digits,
+    attribution.name,
+    effective.text,
+    intervals.map((v) => v.toJson()).toList(),
+    breaks.map((v) => v.toJson()).toList(),
     for (final key in overrides.keys.toList()..sort()) [key, overrides[key]],
   ]);
   Settings build() => Settings(
@@ -77,9 +171,24 @@ class ConfigurationDraft {
     refreshMs: refresh,
     digits: digits,
     overrides: overrides,
+    shiftAttribution: attribution,
+    intervals: intervals.isEmpty
+        ? []
+        : [
+            WorkInterval(parseTime(start.text)!, parseTime(end.text)!),
+            ...intervals.skip(1),
+          ],
+    breaks: breaks,
+    document: original?.document,
+    viewDate: original?.viewDate,
+    effectiveFrom: original?.document == null
+        ? null
+        : parseDate(effective.text),
+    policyOverrides: original?.policyOverrides ?? const {},
+    calendarVersion: original?.calendarVersion,
   );
   void dispose() {
-    for (final c in [salary, date, start, end]) {
+    for (final c in [salary, date, start, end, effective]) {
       c.dispose();
     }
   }
@@ -104,7 +213,12 @@ class ConfigurationFields extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l.currencyNote, style: const TextStyle(color: muted)),
+            Text(
+              l.currencyNote,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 28),
             TextFormField(
               key: const Key('salary-input'),
@@ -198,7 +312,12 @@ class ConfigurationFields extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l.workOnlyNote, style: const TextStyle(color: muted)),
+            Text(
+              l.workOnlyNote,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 24),
             _heading(l.weekdays),
             Wrap(
@@ -219,7 +338,12 @@ class ConfigurationFields extends StatelessWidget {
             if (d.days.isEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 12),
-                child: Text(l.noWorkdays, style: const TextStyle(color: muted)),
+                child: Text(
+                  l.noWorkdays,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ),
             const SizedBox(height: 28),
             DateTimeField(
@@ -242,7 +366,10 @@ class ConfigurationFields extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               l.overnightHelp,
-              style: const TextStyle(color: muted, fontSize: 12),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: 20),
             SwitchListTile.adaptive(
@@ -255,6 +382,37 @@ class ConfigurationFields extends StatelessWidget {
                 changed();
               },
             ),
+            const SizedBox(height: 24),
+            DropdownButtonFormField<ShiftAttribution>(
+              isExpanded: true,
+              initialValue: d.attribution,
+              decoration: InputDecoration(labelText: l.attribution),
+              items: [
+                DropdownMenuItem(
+                  value: ShiftAttribution.calendarDate,
+                  child: Text(l.calendarDate),
+                ),
+                DropdownMenuItem(
+                  value: ShiftAttribution.shiftStartDate,
+                  child: Text(l.shiftStartDate),
+                ),
+              ],
+              onChanged: (v) {
+                d.attribution = v!;
+                changed();
+              },
+            ),
+            const SizedBox(height: 12),
+            Text(
+              l.attributionHelp,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 24),
+            _intervals(context, l.workIntervals, d.intervals, work: true),
+            const SizedBox(height: 24),
+            _intervals(context, l.breakIntervals, d.breaks),
           ],
         );
       case ConfigSection.calendar:
@@ -262,22 +420,31 @@ class ConfigurationFields extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l.calendarWarning, style: const TextStyle(color: muted)),
+            Text(
+              l.calendarWarning,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 12),
             Text(
               l.workOnlyNote,
-              style: const TextStyle(color: muted, fontSize: 12),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: 24),
             if (keys.isEmpty) ...[
-              const Icon(
-                Icons.event_available_outlined,
-                color: accent,
-                size: 36,
-              ),
+              Icon(Icons.event_available_outlined, color: accent, size: 36),
               const SizedBox(height: 16),
               _heading(l.noOverrides),
-              Text(l.noOverridesHelp, style: const TextStyle(color: muted)),
+              Text(
+                l.noOverridesHelp,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(height: 20),
             ],
             for (final key in keys)
@@ -337,7 +504,12 @@ class ConfigurationFields extends StatelessWidget {
               },
             ),
             const SizedBox(height: 12),
-            Text(l.refreshHelp, style: const TextStyle(color: muted)),
+            Text(
+              l.refreshHelp,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 32),
             DropdownButtonFormField<int>(
               isExpanded: true,
@@ -355,6 +527,72 @@ class ConfigurationFields extends StatelessWidget {
           ],
         );
     }
+  }
+
+  Widget _intervals(
+    BuildContext context,
+    String title,
+    List<WorkInterval> values, {
+    bool work = false,
+  }) {
+    final l = context.l;
+    final visible = work ? values.skip(1).toList() : values;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _heading(title),
+        for (final value in visible)
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              '${ConfigurationDraft._time(value.start)}–${ConfigurationDraft._time(value.end)}',
+            ),
+            trailing: IconButton(
+              tooltip: l.remove,
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () {
+                values.remove(value);
+                changed();
+              },
+            ),
+          ),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.add),
+          label: Text(l.addInterval),
+          onPressed: values.length >= 16
+              ? null
+              : () async {
+                  if (work &&
+                      values.isEmpty &&
+                      (ConfigurationDraft.parseTime(draft.start.text) == null ||
+                          ConfigurationDraft.parseTime(draft.end.text) ==
+                              null ||
+                          ConfigurationDraft.parseTime(draft.start.text) ==
+                              ConfigurationDraft.parseTime(draft.end.text))) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(l.shiftError)));
+                    return;
+                  }
+                  final result = await showDialog<WorkInterval>(
+                    context: context,
+                    builder: (_) => const _IntervalDialog(),
+                  );
+                  if (result == null) return;
+                  if (work && values.isEmpty) {
+                    values.add(
+                      WorkInterval(
+                        ConfigurationDraft.parseTime(draft.start.text)!,
+                        ConfigurationDraft.parseTime(draft.end.text)!,
+                      ),
+                    );
+                  }
+                  values.add(result);
+                  changed();
+                },
+        ),
+      ],
+    );
   }
 
   Widget _heading(String text) => Padding(

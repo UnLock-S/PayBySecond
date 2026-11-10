@@ -5,6 +5,7 @@ import '../../../application/income_session.dart';
 import '../../../application/overtime.dart';
 import '../../../application/date_time_input.dart';
 import '../../../shared/presentation/design.dart';
+import '../../../shared/presentation/financial_privacy.dart';
 import '../../../shared/presentation/date_time_field.dart';
 
 String overtimeDayLabel(OvertimeDay day, AppLocalizations l) => switch (day) {
@@ -63,7 +64,7 @@ class OvertimeCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.more_time, color: accent),
+              Icon(Icons.more_time, color: accent),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -84,38 +85,61 @@ class OvertimeCard extends StatelessWidget {
           ),
           Text(
             active == null ? l.otIdle : l.otRunning,
-            style: const TextStyle(color: muted),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           if ((active?.policy ?? c.book.policy) case final policy?)
             Text(
               '${overtimeDayLabel(policy.day, l)} · ${overtimePayLabel(policy.pay, l)}',
-              style: const TextStyle(fontSize: 12, color: muted),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          if ((active?.policy ?? c.book.policy)?.legacy ?? false)
+            Text(
+              l.otLegacy,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           const SizedBox(height: 12),
           Text(
             active == null
                 ? '${l.otTotalTime}  ${durationText(total)}'
                 : '${l.otThisTime}  ${durationText(elapsed)}',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Text(
-            '${l.otExpected}: ${money(c.closedExpected + (active?.policy.expected(elapsed) ?? Money.zero))}',
+            '${l.otExpected}: ${money(c.closedExpected + (active?.expectedAt(now) ?? Money.zero))}',
           ),
           Text(
-            '${l.otLegalReference}: ${money(c.closedStatutory + (active?.policy.statutory(elapsed) ?? Money.zero))}',
-            style: const TextStyle(color: muted),
+            '${l.otLegalReference}: ${money(c.closedStatutory + (active?.reference(now).knownCash ?? Money.zero))}',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          Text(
+            '${l.otPendingTime}: ${durationText(c.closedPending + (active?.reference(now).pendingDuration ?? Duration.zero))}',
+          ),
+          Text(
+            '${l.otCompTime}: ${durationText(c.closedCompensatory + (active?.reference(now).compensatoryDuration ?? Duration.zero))}',
           ),
           if (active?.policy.pay == OvertimePay.unpaid) ...[
             const SizedBox(height: 12),
             Text(
               l.otJoke(money(active!.policy.unpaidValue(elapsed))),
               key: const Key('overtime-joke'),
-              style: const TextStyle(color: Color(0xFF9C542D)),
+              style: TextStyle(color: Color(0xFF9C542D)),
             ),
             Text(
               l.otJokeHelp,
-              style: const TextStyle(fontSize: 12, color: muted),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
           const SizedBox(height: 20),
@@ -134,7 +158,10 @@ class OvertimeCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             l.otIndependent,
-            style: const TextStyle(fontSize: 12, color: muted),
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -162,7 +189,11 @@ class _OvertimeSettingsPageState extends State<OvertimeSettingsPage> {
   late OvertimePay _pay;
   late OvertimeDay _day;
   late bool _leave;
-  bool _saving = false, _failed = false;
+  bool _saving = false,
+      _failed = false,
+      _scope = false,
+      _arranged = false,
+      _reviewed = false;
   @override
   void initState() {
     super.initState();
@@ -201,6 +232,15 @@ class _OvertimeSettingsPageState extends State<OvertimeSettingsPage> {
       final policy = OvertimePolicy(
         monthlyMinor: BigInt.from(_hundredths(_base.text)!),
         pay: _pay,
+        referenceVersion: cnStandard2025['id']!,
+        standardHoursConfirmed: _scope,
+        employerArranged: _arranged,
+        sourceReviewedAt: _reviewed ? DateTime.now().toUtc() : null,
+        classificationDate: EarningsPolicy.dateKey(
+          (widget.startAt?.call() ?? DateTime.now()).toUtc().add(
+            const Duration(hours: 8),
+          ),
+        ),
         day: _day,
         compensatoryLeave: _leave,
         multiplier: _pay == OvertimePay.custom
@@ -242,7 +282,12 @@ class _OvertimeSettingsPageState extends State<OvertimeSettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l.otSettingsHelp, style: const TextStyle(color: muted)),
+                Text(
+                  l.otSettingsHelp,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
                 const SizedBox(height: 24),
                 DropdownButtonFormField<OvertimePay>(
                   key: const Key('overtime-pay'),
@@ -317,9 +362,41 @@ class _OvertimeSettingsPageState extends State<OvertimeSettingsPage> {
                   ),
                 ],
                 const SizedBox(height: 24),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l.otScopeConfirm),
+                  value: _scope,
+                  onChanged: _saving
+                      ? null
+                      : (v) => setState(() => _scope = v!),
+                ),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l.otArrangedConfirm),
+                  value: _arranged,
+                  onChanged: _saving
+                      ? null
+                      : (v) => setState(() => _arranged = v!),
+                ),
+                SelectableText(
+                  '${cnStandard2025['id']}\n${cnStandard2025['url']}\n${cnStandard2025['laborLawUrl']}',
+                ),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l.otReviewConfirm),
+                  value: _reviewed,
+                  onChanged: _saving
+                      ? null
+                      : (v) => setState(() => _reviewed = v!),
+                ),
+                Text(l.otPendingHelp),
+                const SizedBox(height: 24),
                 Text(
                   l.otLegalHelp,
-                  style: const TextStyle(color: muted, fontSize: 13),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 if (_failed)
@@ -453,7 +530,11 @@ class _OvertimeDetailsPageState extends State<OvertimeDetailsPage>
     );
     if (!mounted) return;
     _away = false;
-    if (end != null) await _change((book) => book.replace(entry.stop(end)));
+    if (end != null) {
+      await _change(
+        (book) => book.replace(entry.correctEnd(end, widget.clock.now())),
+      );
+    }
     _refresh();
   }
 
@@ -484,6 +565,8 @@ class _OvertimeDetailsPageState extends State<OvertimeDetailsPage>
     final active = c.book.active;
     final elapsed = active?.elapsed(_now) ?? Duration.zero;
     final entries = c.book.entries.reversed.take(_limit);
+    String amount(Money v) =>
+        FinancialPrivacy.hidden(context) ? '••••' : v.format(4);
     return Scaffold(
       appBar: AppBar(title: Text(l.otDetails)),
       body: PageBody(
@@ -492,27 +575,36 @@ class _OvertimeDetailsPageState extends State<OvertimeDetailsPage>
           children: [
             Text(
               '${l.otTotalTime}: ${durationText(c.closedDuration + elapsed)}',
-              style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
             Text(
-              '${l.otExpected}: ¥${(c.closedExpected + (active?.policy.expected(elapsed) ?? Money.zero)).format(4)}',
+              '${l.otExpected}: ¥${amount((c.closedExpected + (active?.expectedAt(_now) ?? Money.zero)))}',
             ),
             Text(
-              '${l.otLegalReference}: ¥${(c.closedStatutory + (active?.policy.statutory(elapsed) ?? Money.zero)).format(4)}',
+              '${l.otLegalReference}: ¥${amount((c.closedStatutory + (active?.reference(_now).knownCash ?? Money.zero)))}',
             ),
             Text(
-              '${l.otUnpaidValue}: ¥${(c.closedUnpaid + (active?.policy.unpaidValue(elapsed) ?? Money.zero)).format(4)}',
+              '${l.otUnpaidValue}: ¥${amount((c.closedUnpaid + (active?.policy.unpaidValue(elapsed) ?? Money.zero)))}',
+            ),
+            Text(
+              '${l.otPendingTime}: ${durationText(c.closedPending + (active?.reference(_now).pendingDuration ?? Duration.zero))}',
+            ),
+            Text(
+              '${l.otCompTime}: ${durationText(c.closedCompensatory + (active?.reference(_now).compensatoryDuration ?? Duration.zero))}',
             ),
             Text(
               l.otJokeHelp,
-              style: const TextStyle(color: muted, fontSize: 12),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: 20),
             OutlinedButton.icon(
               key: const Key('overtime-settings'),
               onPressed: c.busy ? null : _configure,
-              icon: const Icon(Icons.tune),
+              icon: Icon(Icons.tune),
               label: Text(l.otSettings),
             ),
             if (c.book.policy != null)
@@ -522,16 +614,22 @@ class _OvertimeDetailsPageState extends State<OvertimeDetailsPage>
             const SizedBox(height: 20),
             Text(
               l.otLegalHelp,
-              style: const TextStyle(color: muted, fontSize: 13),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 13,
+              ),
             ),
             const Divider(height: 40),
             Text(
               l.otHistory,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
             Text(
               l.otHistoryHelp,
-              style: const TextStyle(color: muted, fontSize: 12),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 12,
+              ),
             ),
             if (active != null)
               ListTile(
@@ -557,12 +655,25 @@ class _OvertimeDetailsPageState extends State<OvertimeDetailsPage>
                       Text(
                         '${durationText(e.elapsed(e.end!))} · ${overtimeDayLabel(e.policy.day, l)} · ${overtimePayLabel(e.policy.pay, l)}',
                       ),
+                      Text('${l.otExpected}: ¥${amount(e.expectedAt(e.end!))}'),
                       Text(
-                        '${l.otExpected}: ¥${e.policy.expected(e.elapsed(e.end!)).format(4)}',
+                        '${l.otLegalReference}: ¥${amount(e.reference(e.end!).knownCash)}',
                       ),
                       Text(
-                        '${l.otLegalReference}: ¥${e.policy.statutory(e.elapsed(e.end!)).format(4)}',
+                        e.policy.legacy
+                            ? l.otLegacy
+                            : '${e.policy.referenceVersion} · ${e.policy.classificationDate}',
                       ),
+                      Text(
+                        '${l.otPendingTime}: ${durationText(e.reference(e.end!).pendingDuration)}',
+                      ),
+                      Text(
+                        '${l.otCompTime}: ${durationText(e.reference(e.end!).compensatoryDuration)}',
+                      ),
+                      if (e.correctedAt != null)
+                        Text(
+                          '${l.otCorrectionRecorded}: ${e.correctedAt!.toIso8601String()} · ${e.previousEnds.length}',
+                        ),
                       Wrap(
                         spacing: 8,
                         children: [
